@@ -114,22 +114,25 @@ def get_dashboard_data(miller_id: str):
     # Transform to match original data.js format
     formatted_data = {
         "miller_id": miller['id'],
+        "name": miller['name'],
         "miller_name_full": miller['name'],
-        "rice_target": miller['target_rice'],
-        "rice_deposited": miller['deposited_rice'],
-        "rice_balance": miller['rice_balance'],
-        "total_do": miller['total_allotted_paddy'],
-        "balance_paddy": miller['balance_paddy'],
-        "paddy_amt": miller['paddy_amt'],
-        "balance_bg": miller['bg_amount'],
-        "free_bg": miller['free_bg'],
+        "metrics": {
+            "riceTarget": miller['target_rice'],
+            "riceDeposited": miller['deposited_rice'],
+            "riceBalance": miller['rice_balance'],
+            "totalAllottedPaddy": miller['total_allotted_paddy'],
+            "balancePaddy": miller['balance_paddy'],
+            "paddyAmt": miller['paddy_amt'],
+            "bgAmount": miller['bg_amount'],
+            "freeBg": miller['free_bg']
+        },
         
         # We need to format rice_qualities back to list of dicts with 'qualities'
         # The original was: [{'agreement': '...', 'qualities': {'ARWA': 100}}]
         # Since we just saved quality_type and quantity, we can simplify or group them
-        "rice_qualities": [{"qualities": {rq['quality_type']: rq['quantity']}} for rq in rice_qualities],
+        "riceQualities": [{"qualities": {rq['quality_type']: rq['quantity']}} for rq in rice_qualities],
         
-        "gatepasses": [
+        "gatePassStatus": [
             {
                 "lotNo": gp['lot_no'],
                 "date": gp['pass_date'],
@@ -151,7 +154,7 @@ def get_dashboard_data(miller_id: str):
                 "qty": do['quantity']
             } for do in pending_dos
         ],
-        "bgs": [
+        "nearestBgs": [
             {
                 "id": bg['bg_no'],
                 "bank": bg['bank_name'],
