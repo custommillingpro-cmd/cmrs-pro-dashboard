@@ -674,9 +674,7 @@ function toggleSupportModal() {
         };
 
         // Initialize the first view
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!checkLoginStatus()) return; // Stop if not logged in
-
+        function initializeDashboardView() {
             const tabsContainer = document.getElementById('millerTabs');
             const dashboardData = window.dashboardData || {};
             const keys = Object.keys(dashboardData);
@@ -691,7 +689,9 @@ function toggleSupportModal() {
             
             keys.forEach(k => {
                 if (k !== 'combined') {
-                    tabsContainer.innerHTML += `<button class="tab-btn" data-id="${k}">${dashboardData[k].name}</button>`;
+                    // Make sure name exists, use ID as fallback
+                    const millerName = dashboardData[k].miller_name_full || k;
+                    tabsContainer.innerHTML += `<button class="tab-btn" data-id="${k}">${millerName}</button>`;
                 }
             });
             
@@ -711,7 +711,7 @@ function toggleSupportModal() {
             const initialTab = document.querySelector(`.tab-btn[data-id="${firstId}"]`);
             if (initialTab) initialTab.classList.add('active');
 
-            loadView(firstId);
+            if (firstId) loadView(firstId);
             
             // Add 'Upload Security' button to Active Bank Guarantee card
             const bgCard = document.querySelector('.bg-card-container');
@@ -724,7 +724,7 @@ function toggleSupportModal() {
                 btn.onclick = () => document.getElementById('uploadSecurityModal').style.display = 'flex';
                 bgCard.appendChild(btn);
             }
-        });
+        }
         // renderLeaderboard
         function renderLeaderboard() {
             if (!window.leaderboardData) return;
@@ -800,33 +800,58 @@ function toggleSupportModal() {
         
         // --- AUTHENTICATION & SECURITY LOGIC ---
         
+        const API_BASE_URL = 'https://cmrs-pro-dashboard.onrender.com/api';
+
+        async function fetchDashboardData(millerId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/dashboard/${millerId}`);
+                if (!response.ok) throw new Error('Data not found');
+                const result = await response.json();
+                
+                if (!window.dashboardData) window.dashboardData = {};
+                window.dashboardData[millerId] = result.data;
+                return true;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return false;
+            }
+        }
+
         function checkLoginStatus() {
             const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
             const loginOverlay = document.getElementById('loginOverlay');
             const paymentOverlay = document.getElementById('paymentOverlay');
             
             if (loggedInUser && window.dashboardData && window.dashboardData[loggedInUser]) {
-                // User is authenticated
                 if (sessionStorage.getItem('payment_skipped')) {
-                    // Payment skipped for this session
                     if(loginOverlay) loginOverlay.style.display = 'none';
                     if(paymentOverlay) paymentOverlay.style.display = 'none';
                     return true;
                 } else {
-                    // Show payment wall
                     if(loginOverlay) loginOverlay.style.display = 'none';
                     if(paymentOverlay) paymentOverlay.style.display = 'flex';
                     return false;
                 }
             } else {
-                // Not authenticated or Invalid user data
                 if(loginOverlay) loginOverlay.style.display = 'flex';
                 if(paymentOverlay) paymentOverlay.style.display = 'none';
-                
-                // Clean up invalid session
-                localStorage.removeItem('cmrs_user');
-                sessionStorage.removeItem('cmrs_user');
                 return false;
+            }
+        }
+
+        async function initAuth() {
+            const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
+            if (loggedInUser) {
+                const success = await fetchDashboardData(loggedInUser);
+                if (success) {
+                    if (checkLoginStatus()) {
+                        initializeDashboardView();
+                    }
+                } else {
+                    logoutUser();
+                }
+            } else {
+                checkLoginStatus();
             }
         }
 
@@ -835,34 +860,49 @@ function toggleSupportModal() {
             window.location.reload();
         }
 
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             const usernameInput = document.getElementById('loginUsername').value.trim().toUpperCase();
             const passwordInput = document.getElementById('loginPassword').value.trim();
             const keepLoggedIn = document.getElementById('keepLoggedIn').checked;
             const errorMsg = document.getElementById('loginError');
-            
-            // Basic hardcoded check since Backend API is pending
-            // In future, this will be an API call to MySQL
-            if (window.dashboardData && window.dashboardData[usernameInput] && passwordInput === "12345") {
-                errorMsg.style.display = 'none';
-                
-                if (keepLoggedIn) {
-                    localStorage.setItem('cmrs_user', usernameInput);
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                if (response.ok) {
+                    if (keepLoggedIn) {
+                        localStorage.setItem('cmrs_user', usernameInput);
+                    } else {
+                        sessionStorage.setItem('cmrs_user', usernameInput);
+                    }
+                    window.location.reload();
                 } else {
-                    sessionStorage.setItem('cmrs_user', usernameInput);
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "Invalid Miller ID or Password.";
+                    submitBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
+                    submitBtn.disabled = false;
                 }
-                
-                // Refresh the page to load user-specific view safely
-                window.location.reload();
-            } else {
+            } catch (err) {
                 errorMsg.style.display = 'block';
+                errorMsg.textContent = "Server connection error. Please try again later.";
+                submitBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
+                submitBtn.disabled = false;
             }
         }
 
         function logoutUser() {
             localStorage.removeItem('cmrs_user');
             sessionStorage.removeItem('cmrs_user');
+            sessionStorage.removeItem('payment_skipped');
             window.location.reload();
         }
 
@@ -955,4 +995,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('darkMode') === 'true') {
         toggleDarkMode();
     }
+    
+    // Initialize Authentication
+    initAuth();
 });
