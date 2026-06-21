@@ -16,12 +16,23 @@
 
 <body>
 
-    <!-- LOADING OVERLAY -->
+    <!-- PREMIUM BLUR LOADING OVERLAY -->
     <div id="globalLoadingOverlay"
-        style="position: fixed; inset: 0; z-index: 10000; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
-        <h3 style="color: #0f172a; font-family: 'Outfit', sans-serif;">Loading CMRS PRO...</h3>
+        style="position: fixed; inset: 0; z-index: 10000; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease;">
+        <div style="background: white; padding: 2.5rem 3.5rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.2); border: 1px solid rgba(255,255,255,0.8); display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div style="position: relative; width: 80px; height: 80px; margin-bottom: 1.5rem;">
+                <div style="position: absolute; inset: 0; border-radius: 50%; border: 4px solid rgba(67, 24, 255, 0.1);"></div>
+                <div style="position: absolute; inset: 0; border-radius: 50%; border: 4px solid var(--primary); border-top-color: transparent; animation: spin 1s linear infinite;"></div>
+                <i class="fa-solid fa-cloud-arrow-down" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary);"></i>
+            </div>
+            <h3 style="color: #0f172a; font-family: 'Outfit', sans-serif; font-size: 1.4rem; margin-bottom: 0.5rem;" id="loadingOverlayTitle">Loading CMRS PRO</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 250px;" id="loadingOverlayDesc">Please wait while we prepare your dashboard...</p>
+        </div>
     </div>
+    
+    <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 
     <!-- LOGIN OVERLAY -->
     <div id="loginOverlay"

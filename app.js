@@ -946,7 +946,22 @@ function toggleSupportModal() {
                         initializeDashboardView();
                     }
                 } else {
-                    logoutUser();
+                    // If no data is available yet, DO NOT log out. 
+                    // This means they just registered and GitHub Actions is scraping data!
+                    const loadingOverlay = document.getElementById('globalLoadingOverlay');
+                    const title = document.getElementById('loadingOverlayTitle');
+                    const desc = document.getElementById('loadingOverlayDesc');
+                    
+                    if (loadingOverlay && title && desc) {
+                        loadingOverlay.style.display = 'flex';
+                        title.innerText = "Extracting Live Data";
+                        desc.innerText = "Please wait while our bot fetches your data from the Markfed portal... This takes about 1-2 minutes.";
+                        
+                        // Auto-refresh the page every 15 seconds to check if data is ready
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 15000);
+                    }
                 }
             } else {
                 checkLoginStatus();
