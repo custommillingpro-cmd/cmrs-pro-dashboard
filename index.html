@@ -185,11 +185,11 @@
                     financial metrics</p>
             </div>
             <button id="syncButton"
-                onclick="alert('Sync Initiated: In the live app, this will instantly fetch fresh data from Markfed for this specific mill only. (Backend API pending)')"
+                onclick="handleSyncLive(event)"
                 onmouseout="this.style.background='rgba(67, 24, 255, 0.1)'; this.style.color='var(--primary)'; this.querySelector('i').style.transform='rotate(0deg)';"
                 onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.querySelector('i').style.transform='rotate(180deg)';"
                 style="background: rgba(67, 24, 255, 0.1); color: var(--primary); border: 1px solid rgba(67, 24, 255, 0.2); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <i class="fa-solid fa-arrows-rotate" style="transition: transform 0.4s ease;"></i> Sync Live Data
+                <i class="fa-solid fa-arrows-rotate" style="transition: transform 0.4s ease;"></i> <span id="syncBtnText">Sync Live Data</span>
             </button>
         </div>
         <div id="mainDashboardContent">
@@ -923,13 +923,12 @@ Authorized Signatory</textarea>
                     mill.</p>
             </div>
 
-            <form id="addMillForm"
-                onsubmit="event.preventDefault(); alert('Authentication successful! The new mill has been added. Data will be fetched in the background and appear on your dashboard shortly.'); document.getElementById('addMillModal').style.display='none'; this.reset();">
+            <form id="addMillForm" onsubmit="handleAddMill(event)">
                 <div style="margin-bottom: 1rem;">
                     <label
                         style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Miller
                         ID <span style="color: red;">*</span></label>
-                    <input type="text" required placeholder="e.g. MA441234"
+                    <input type="text" id="newMillId" required placeholder="e.g. MA441234"
                         style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
                 </div>
 
@@ -937,7 +936,7 @@ Authorized Signatory</textarea>
                     <label
                         style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Portal
                         Password <span style="color: red;">*</span></label>
-                    <input type="password" required placeholder="Enter portal password"
+                    <input type="password" id="newMillPassword" required placeholder="Enter portal password"
                         style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
                 </div>
 

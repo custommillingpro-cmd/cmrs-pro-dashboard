@@ -981,6 +981,99 @@ function toggleSupportModal() {
             window.location.reload();
         }
 
+        // Add Mill logic
+        async function handleAddMill(event) {
+            event.preventDefault();
+            const millerId = document.getElementById('newMillId').value.trim().toUpperCase();
+            const password = document.getElementById('newMillPassword').value.trim();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/add-mill`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ miller_id: millerId, password: password })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message + "\n\nPlease wait 1-2 minutes and refresh the page.");
+                    document.getElementById('addMillModal').style.display = 'none';
+                    event.target.reset();
+                    // Optionally set cmrs_user if they are not logged in
+                    if (!localStorage.getItem('cmrs_user') && !sessionStorage.getItem('cmrs_user')) {
+                        localStorage.setItem('cmrs_user', millerId);
+                    }
+                } else {
+                    alert("Error: " + result.detail);
+                }
+            } catch (err) {
+                alert("Server connection error. Please try again.");
+            } finally {
+                submitBtn.innerHTML = '<i class="fa-solid fa-link"></i> Connect Mill';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Sync Live Data logic
+        async function handleSyncLive(event) {
+            // Get current active miller ID
+            let activeMillerId = null;
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab) {
+                activeMillerId = activeTab.getAttribute('data-id');
+            }
+            
+            if (!activeMillerId || activeMillerId === 'combined' || activeMillerId === 'leaderboard') {
+                alert("Please select a specific Mill from the tabs above to sync live data.");
+                return;
+            }
+
+            const btn = document.getElementById('syncButton');
+            const btnText = document.getElementById('syncBtnText');
+            const icon = btn.querySelector('i');
+            
+            btn.disabled = true;
+            btnText.innerText = "Syncing...";
+            icon.classList.add('fa-spin');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/sync-live`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ miller_id: activeMillerId })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message);
+                    // Freeze button
+                    btnText.innerText = "Cooldown Active";
+                    btn.style.background = "#e2e8f0";
+                    btn.style.color = "#94a3b8";
+                    btn.style.cursor = "not-allowed";
+                    icon.classList.remove('fa-spin');
+                    icon.classList.remove('fa-arrows-rotate');
+                    icon.classList.add('fa-lock');
+                } else {
+                    alert("Error: " + result.detail);
+                    btn.disabled = false;
+                    btnText.innerText = "Sync Live Data";
+                    icon.classList.remove('fa-spin');
+                }
+            } catch (err) {
+                alert("Server connection error.");
+                btn.disabled = false;
+                btnText.innerText = "Sync Live Data";
+                icon.classList.remove('fa-spin');
+            }
+        }
+
         // Add Logout button dynamically to navbar if logged in
         document.addEventListener('DOMContentLoaded', () => {
             const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');

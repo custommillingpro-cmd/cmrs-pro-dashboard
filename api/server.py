@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 import os
 from pydantic import BaseModel
+import requests
+from datetime import datetime, timedelta
+import json
 
 app = FastAPI(title="CMRS PRO API")
 
@@ -144,3 +147,106 @@ def get_dashboard_data(miller_id: str):
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+
+# --- PHASE 3 AUTOMATION ENDPOINTS ---
+
+class AddMillRequest(BaseModel):
+    miller_id: str
+    password: str
+
+def trigger_github_action(miller_id: str, password: str, action_type: str = "sync"):
+    """Trigger GitHub Actions workflow via repository_dispatch"""
+    github_token = os.getenv("GITHUB_TOKEN")
+    repo = os.getenv("GITHUB_REPO", "custommillingpro-cmd/cmrs-pro-dashboard")
+    
+    if not github_token:
+        print("Warning: GITHUB_TOKEN not set, skipping real automation trigger.")
+        return False
+        
+    url = f"https://api.github.com/repos/{repo}/dispatches"
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": f"token {github_token}"
+    }
+    payload = {
+        "event_type": f"trigger-{action_type}",
+        "client_payload": {
+            "miller_id": miller_id,
+            "password": password
+        }
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        return response.status_code == 204
+    except Exception as e:
+        print(f"Failed to trigger GitHub Action: {e}")
+        return False
+
+@app.post("/api/add-mill")
+def add_mill(req: AddMillRequest):
+    miller_id = req.miller_id.upper().strip()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Save or update credentials
+        cursor.execute('''
+            INSERT INTO miller_credentials (miller_id, portal_password)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE portal_password = %s
+        ''', (miller_id, req.password, req.password))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Database error")
+    finally:
+        conn.close()
+        
+    # Trigger the background scraper to fetch data for the first time
+    trigger_github_action(miller_id, req.password, action_type="add-mill")
+    
+    return {"status": "success", "message": "Credentials saved. Data extraction started in background."}
+
+class SyncRequest(BaseModel):
+    miller_id: str
+
+@app.post("/api/sync-live")
+def sync_live(req: SyncRequest):
+    miller_id = req.miller_id.upper().strip()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+    cred = cursor.fetchone()
+    
+    if not cred:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Credentials not found. Please re-add mill.")
+        
+    # Check 1-hour cooldown
+    if cred['last_sync_time']:
+        time_diff = datetime.now() - cred['last_sync_time']
+        if time_diff < timedelta(hours=1):
+            conn.close()
+            remaining_mins = int(60 - time_diff.total_seconds() / 60)
+            raise HTTPException(
+                status_code=429, 
+                detail=f"Sync is frozen to prevent server overload. Please try again in {remaining_mins} minutes."
+            )
+            
+    # Update last_sync_time
+    try:
+        cursor.execute("UPDATE miller_credentials SET last_sync_time = NOW() WHERE miller_id = %s", (miller_id,))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+    finally:
+        conn.close()
+        
+    # Trigger background worker
+    trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
+    
+    return {"status": "success", "message": "Live sync started in background. Refresh dashboard in 1-2 minutes."}
