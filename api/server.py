@@ -39,23 +39,46 @@ class LoginRequest(BaseModel):
 
 @app.post("/api/login")
 def login(req: LoginRequest):
-    # Dummy authentication for now
-    if req.password != "12345":
-        raise HTTPException(status_code=401, detail="Invalid Credentials")
+    miller_id = req.username.upper().strip()
     
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Check if miller exists
-    cursor.execute("SELECT id, name FROM millers WHERE id = %s", (req.username,))
-    miller = cursor.fetchone()
-    
-    conn.close()
-    
-    if not miller:
-        raise HTTPException(status_code=401, detail="Miller ID not found")
+    try:
+        # Check if credentials exist
+        cursor.execute("SELECT portal_password FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+        cred = cursor.fetchone()
         
-    return {"status": "success", "miller": miller}
+        if cred:
+            # Miller exists in credentials, check password
+            if cred['portal_password'] != req.password:
+                raise HTTPException(status_code=401, detail="Invalid Portal Password")
+            
+            # Password correct, check if data is available
+            cursor.execute("SELECT id FROM millers WHERE id = %s", (miller_id,))
+            if not cursor.fetchone():
+                return {"status": "processing", "message": "First time login. Data extraction is still running in background. Please wait 1-2 minutes."}
+            return {"status": "success", "message": "Login successful"}
+            
+        else:
+            # First time logging in ever! We treat this as Add Mill
+            cursor.execute('''
+                INSERT INTO miller_credentials (miller_id, portal_password)
+                VALUES (%s, %s)
+            ''', (miller_id, req.password))
+            conn.commit()
+            
+            # Trigger background worker
+            trigger_github_action(miller_id, req.password, action_type="add-mill")
+            return {"status": "processing", "message": "First time login. Data extraction started in background. Please wait 1-2 minutes and refresh."}
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Database Error")
+    finally:
+        conn.close()
 
 @app.get("/api/dashboard/{miller_id}")
 def get_dashboard_data(miller_id: str):

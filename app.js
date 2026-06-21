@@ -953,16 +953,23 @@ function toggleSupportModal() {
                     body: JSON.stringify({ username: usernameInput, password: passwordInput })
                 });
 
+                const result = await response.json();
+
                 if (response.ok) {
                     if (keepLoggedIn) {
                         localStorage.setItem('cmrs_user', usernameInput);
                     } else {
                         sessionStorage.setItem('cmrs_user', usernameInput);
                     }
+                    
+                    if (result.status === 'processing') {
+                        alert(result.message);
+                    }
+                    
                     window.location.reload();
                 } else {
                     errorMsg.style.display = 'block';
-                    errorMsg.textContent = "Invalid Miller ID or Password.";
+                    errorMsg.textContent = result.detail || "Invalid Miller ID or Password.";
                     submitBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right"></i>';
                     submitBtn.disabled = false;
                 }
