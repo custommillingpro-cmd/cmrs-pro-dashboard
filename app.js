@@ -886,15 +886,29 @@ function toggleSupportModal() {
             }
         }
 
+        function getCmrsUsers() {
+            const raw = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
+            if (!raw) return [];
+            try {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [raw];
+            } catch(e) {
+                return [raw];
+            }
+        }
+
         function checkLoginStatus() {
-            const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
+            const users = getCmrsUsers();
             const loginOverlay = document.getElementById('loginOverlay');
             const paymentOverlay = document.getElementById('paymentOverlay');
             const loadingOverlay = document.getElementById('globalLoadingOverlay');
             
             if (loadingOverlay) loadingOverlay.style.display = 'none';
 
-            if (loggedInUser && window.dashboardData && window.dashboardData[loggedInUser]) {
+            // Check if at least one user has loaded data
+            const hasData = users.some(u => window.dashboardData && window.dashboardData[u]);
+
+            if (users.length > 0 && hasData) {
                 if (sessionStorage.getItem('payment_skipped')) {
                     if(loginOverlay) loginOverlay.style.display = 'none';
                     if(paymentOverlay) paymentOverlay.style.display = 'none';
@@ -915,10 +929,15 @@ function toggleSupportModal() {
             // Force clear any old data.js cache to prevent ghost millers
             window.dashboardData = {};
             
-            const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
-            if (loggedInUser) {
-                const success = await fetchDashboardData(loggedInUser);
-                if (success) {
+            const users = getCmrsUsers();
+            if (users.length > 0) {
+                let anySuccess = false;
+                for (const u of users) {
+                    const success = await fetchDashboardData(u);
+                    if (success) anySuccess = true;
+                }
+                
+                if (anySuccess) {
                     if (checkLoginStatus()) {
                         initializeDashboardView();
                     }
@@ -956,10 +975,13 @@ function toggleSupportModal() {
                 const result = await response.json();
 
                 if (response.ok) {
+                    const users = getCmrsUsers();
+                    if (!users.includes(usernameInput)) users.push(usernameInput);
+
                     if (keepLoggedIn) {
-                        localStorage.setItem('cmrs_user', usernameInput);
+                        localStorage.setItem('cmrs_user', JSON.stringify(users));
                     } else {
-                        sessionStorage.setItem('cmrs_user', usernameInput);
+                        sessionStorage.setItem('cmrs_user', JSON.stringify(users));
                     }
                     
                     if (result.status === 'processing') {
@@ -1011,9 +1033,17 @@ function toggleSupportModal() {
                     alert(result.message + "\n\nPlease wait 1-2 minutes and refresh the page.");
                     document.getElementById('addMillModal').style.display = 'none';
                     event.target.reset();
-                    // Optionally set cmrs_user if they are not logged in
-                    if (!localStorage.getItem('cmrs_user') && !sessionStorage.getItem('cmrs_user')) {
-                        localStorage.setItem('cmrs_user', millerId);
+                    
+                    const users = getCmrsUsers();
+                    if (!users.includes(millerId)) {
+                        users.push(millerId);
+                        if (localStorage.getItem('cmrs_user')) {
+                            localStorage.setItem('cmrs_user', JSON.stringify(users));
+                        } else if (sessionStorage.getItem('cmrs_user')) {
+                            sessionStorage.setItem('cmrs_user', JSON.stringify(users));
+                        } else {
+                            localStorage.setItem('cmrs_user', JSON.stringify(users));
+                        }
                     }
                 } else {
                     alert("Error: " + result.detail);
