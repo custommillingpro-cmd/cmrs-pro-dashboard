@@ -912,6 +912,9 @@ function toggleSupportModal() {
         }
 
         async function initAuth() {
+            // Force clear any old data.js cache to prevent ghost millers
+            window.dashboardData = {};
+            
             const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
             if (loggedInUser) {
                 const success = await fetchDashboardData(loggedInUser);
