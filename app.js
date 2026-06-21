@@ -675,6 +675,8 @@ function toggleSupportModal() {
 
         // Initialize the first view
         document.addEventListener('DOMContentLoaded', () => {
+            if (!checkLoginStatus()) return; // Stop if not logged in
+
             const tabsContainer = document.getElementById('millerTabs');
             const dashboardData = window.dashboardData || {};
             const keys = Object.keys(dashboardData);
@@ -795,7 +797,141 @@ function toggleSupportModal() {
                 }
             }
         }
-    
+        
+        // --- AUTHENTICATION & SECURITY LOGIC ---
+        
+        function checkLoginStatus() {
+            const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
+            const loginOverlay = document.getElementById('loginOverlay');
+            const paymentOverlay = document.getElementById('paymentOverlay');
+            
+            if (loggedInUser && window.dashboardData && window.dashboardData[loggedInUser]) {
+                // User is authenticated
+                if (sessionStorage.getItem('payment_skipped')) {
+                    // Payment skipped for this session
+                    if(loginOverlay) loginOverlay.style.display = 'none';
+                    if(paymentOverlay) paymentOverlay.style.display = 'none';
+                    return true;
+                } else {
+                    // Show payment wall
+                    if(loginOverlay) loginOverlay.style.display = 'none';
+                    if(paymentOverlay) paymentOverlay.style.display = 'flex';
+                    return false;
+                }
+            } else {
+                // Not authenticated or Invalid user data
+                if(loginOverlay) loginOverlay.style.display = 'flex';
+                if(paymentOverlay) paymentOverlay.style.display = 'none';
+                
+                // Clean up invalid session
+                localStorage.removeItem('cmrs_user');
+                sessionStorage.removeItem('cmrs_user');
+                return false;
+            }
+        }
+
+        function skipPayment() {
+            sessionStorage.setItem('payment_skipped', 'true');
+            window.location.reload();
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('loginUsername').value.trim().toUpperCase();
+            const passwordInput = document.getElementById('loginPassword').value.trim();
+            const keepLoggedIn = document.getElementById('keepLoggedIn').checked;
+            const errorMsg = document.getElementById('loginError');
+            
+            // Basic hardcoded check since Backend API is pending
+            // In future, this will be an API call to MySQL
+            if (window.dashboardData && window.dashboardData[usernameInput] && passwordInput === "12345") {
+                errorMsg.style.display = 'none';
+                
+                if (keepLoggedIn) {
+                    localStorage.setItem('cmrs_user', usernameInput);
+                } else {
+                    sessionStorage.setItem('cmrs_user', usernameInput);
+                }
+                
+                // Refresh the page to load user-specific view safely
+                window.location.reload();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('cmrs_user');
+            sessionStorage.removeItem('cmrs_user');
+            window.location.reload();
+        }
+
+        // Add Logout button dynamically to navbar if logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
+            if (loggedInUser) {
+                const navControls = document.querySelector('.navbar > div:last-child');
+                if (navControls) {
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> Logout';
+                    logoutBtn.className = 'btn';
+                    logoutBtn.style.cssText = 'background: rgba(238, 93, 80, 0.1); color: var(--danger); border: none; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; margin-left: 0.5rem; transition: background 0.3s;';
+                    logoutBtn.onmouseover = () => logoutBtn.style.background = 'rgba(238, 93, 80, 0.2)';
+                    logoutBtn.onmouseout = () => logoutBtn.style.background = 'rgba(238, 93, 80, 0.1)';
+                    logoutBtn.onclick = logoutUser;
+                    navControls.appendChild(logoutBtn);
+                }
+            }
+        });
+
+        // --- POLICY & LEGAL PAGES LOGIC ---
+        
+        const policies = {
+            privacy: {
+                title: "Privacy Policy",
+                content: `
+                    <h4>1. Data Collection</h4>
+                    <p>We collect your Miller ID, operational metrics, and portal access tokens strictly for the purpose of generating your financial dashboard.</p>
+                    <h4>2. Data Security</h4>
+                    <p>All extracted portal data is stored securely. We do not share your bank guarantee or delivery order details with any third parties.</p>
+                    <h4>3. Cookies and Storage</h4>
+                    <p>We use local browser storage to keep you logged in permanently if you choose the option. No tracking cookies are used.</p>
+                `
+            },
+            terms: {
+                title: "Terms & Conditions",
+                content: `
+                    <h4>1. Usage Terms</h4>
+                    <p>This software is provided "as is" to assist Custom Milling rice millers in Chhattisgarh. It is an independent dashboard and is not an official Markfed or State Government portal.</p>
+                    <h4>2. Account Responsibility</h4>
+                    <p>You are responsible for maintaining the confidentiality of your login credentials. Any portal automation performed on your behalf is done with your explicit consent.</p>
+                    <h4>3. Liability</h4>
+                    <p>While we strive for 100% accuracy in financial calculations (Free BG, DO balances), users must verify data against the official portal before making critical business decisions.</p>
+                `
+            },
+            refund: {
+                title: "Refund Policy",
+                content: `
+                    <h4>1. Subscription Services</h4>
+                    <p>CMRS PRO is offered on a subscription basis. If you are not satisfied with the dashboard, you may cancel at any time.</p>
+                    <h4>2. Refund Eligibility</h4>
+                    <p>Refunds are processed on a pro-rata basis if requested within the first 7 days of the billing cycle. No refunds are provided for past completed months.</p>
+                `
+            }
+        };
+
+        function openPolicyModal(type) {
+            const modal = document.getElementById('policyModal');
+            const title = document.getElementById('policyModalTitle');
+            const content = document.getElementById('policyModalContent');
+            
+            if (policies[type]) {
+                title.innerText = policies[type].title;
+                content.innerHTML = policies[type].content;
+                modal.style.display = 'flex';
+            }
+        }
+
 
 
 // --- Dark Mode ---
