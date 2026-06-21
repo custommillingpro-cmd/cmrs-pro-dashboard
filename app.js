@@ -737,11 +737,15 @@ function toggleSupportModal() {
 
         // Initialize the first view
         function initializeDashboardView() {
-            generateCombinedData();
+            const dashboardData = window.dashboardData || {};
+            const rawKeys = Object.keys(dashboardData).filter(k => k !== 'leaderboard' && k !== 'combined');
+            
+            if (rawKeys.length > 1) {
+                generateCombinedData();
+            }
             
             const tabsContainer = document.getElementById('millerTabs');
-            const dashboardData = window.dashboardData || {};
-            const keys = Object.keys(dashboardData).filter(k => k !== 'leaderboard');
+            const keys = Object.keys(window.dashboardData).filter(k => k !== 'leaderboard');
             
             // Generate Tabs
             if (keys.includes('combined')) {
