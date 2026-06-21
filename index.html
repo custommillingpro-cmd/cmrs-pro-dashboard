@@ -12,6 +12,85 @@
 </head>
 <body>
 
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; width: 100%; max-width: 420px; border-radius: 24px; padding: 2.5rem 2rem; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow: hidden;">
+        
+        <!-- Decorative bg blur -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(67, 24, 255, 0.1); filter: blur(40px); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -50px; left: -50px; width: 150px; height: 150px; background: rgba(37, 211, 102, 0.1); filter: blur(40px); border-radius: 50%;"></div>
+
+        <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 1;">
+            <img src="logo.png" alt="CMRS Logo" style="height: 60px; margin-bottom: 1rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); border-radius: 8px; background: white; padding: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQzMThGRiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiPkM8L3RleHQ+PC9zdmc+';"/>
+            <h2 style="margin: 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">Welcome Back</h2>
+            <p style="margin: 0; color: #64748b; font-size: 0.9rem; margin-top: 0.4rem;">Sign in to CMRS PRO Dashboard</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" style="position: relative; z-index: 1;">
+            <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Miller ID (Username)</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-user" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="text" id="loginUsername" required placeholder="e.g. MA441234" style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Portal Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="password" id="loginPassword" required placeholder="Enter password" style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #475569; font-weight: 500;">
+                    <input type="checkbox" id="keepLoggedIn" style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">
+                    Keep me logged in permanently
+                </label>
+            </div>
+
+            <button type="submit" style="width: 100%; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.25); transition: transform 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+                Sign In <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <p id="loginError" style="color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; font-weight: 600;">Invalid Credentials. Please try again.</p>
+        </form>
+    </div>
+</div>
+<!-- END LOGIN OVERLAY -->
+
+<!-- PAYMENT OVERLAY (DUMMY) -->
+<div id="paymentOverlay" style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: white; width: 100%; max-width: 480px; border-radius: 24px; padding: 3rem 2rem; box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; text-align: center;">
+        
+        <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto;">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+        </div>
+        
+        <h2 style="margin: 0; color: #166534; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Premium Subscription</h2>
+        <p style="color: #475569; font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">You are currently enjoying the trial phase of CMRS PRO. To unlock permanent access and live WhatsApp alerts, please complete your payment.</p>
+        
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-weight: 600; color: #475569;">Subscription Plan:</span>
+                <span style="font-weight: 700; color: #0f172a;">Yearly Access</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: #475569;">Amount:</span>
+                <span style="font-weight: 800; color: #22c55e; font-size: 1.2rem;">₹ 4,999</span>
+            </div>
+        </div>
+
+        <button onclick="alert('Payment Gateway Integration Pending. Proceeding to Dashboard.')" style="width: 100%; background: #22c55e; color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25); transition: transform 0.2s; margin-bottom: 1rem;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+            Pay Now <i class="fa-solid fa-lock" style="margin-left: 0.3rem; font-size: 0.85rem;"></i>
+        </button>
+        
+        <button onclick="skipPayment()" style="background: none; border: none; color: #94a3b8; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#64748b';" onmouseout="this.style.color='#94a3b8';">
+            Skip for now (Trial Phase)
+        </button>
+    </div>
+</div>
+<!-- END PAYMENT OVERLAY -->
 <nav class="navbar">
 <div class="brand" style="display: flex; align-items: center; gap: 0.8rem;">
 <img src="logo.png" alt="CMRS Logo" style="height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); border-radius: 4px; background: white; padding: 4px;" />
@@ -559,6 +638,56 @@ Authorized Signatory</textarea>
                 <i class="fa-solid fa-link"></i> Connect Mill
             </button>
         </form>
+    </div>
+</div>
+
+<!-- PROFESSIONAL FOOTER -->
+<footer style="background: #0f172a; color: #94a3b8; padding: 3rem 1rem 1rem 1rem; margin-top: 4rem; border-top: 4px solid var(--primary);">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                <img src="logo.png" alt="CMRS Logo" style="height: 30px; background: white; padding: 2px; border-radius: 4px;" onerror="this.style.display='none'">
+                <span style="color: white; font-size: 1.2rem; font-weight: 700;">CMRS PRO</span>
+            </div>
+            <p style="font-size: 0.85rem; line-height: 1.6;">Automated financial and operational reporting dashboard designed exclusively for Chhattisgarh Custom Milling rice millers.</p>
+        </div>
+        
+        <div>
+            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Legal Pages</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
+                <li><a href="#" onclick="openPolicyModal('privacy')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Privacy Policy</a></li>
+                <li><a href="#" onclick="openPolicyModal('terms')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Terms & Conditions</a></li>
+                <li><a href="#" onclick="openPolicyModal('refund')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Refund Policy</a></li>
+            </ul>
+        </div>
+        
+        <div>
+            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Contact Us</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
+                <li><i class="fa-solid fa-envelope" style="width: 20px;"></i> support@cmrspro.com</li>
+                <li><i class="fa-solid fa-phone" style="width: 20px;"></i> +91 98765 43210</li>
+                <li><i class="fa-brands fa-whatsapp" style="width: 20px;"></i> WhatsApp Support Available</li>
+            </ul>
+        </div>
+    </div>
+    <div style="max-width: 1200px; margin: 0 auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; font-size: 0.8rem;">
+        &copy; 2026 CMRS PRO. All rights reserved. Not affiliated with Government of Chhattisgarh.
+    </div>
+</footer>
+
+<!-- Policy Modal -->
+<div id="policyModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
+    <div style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+            <h3 id="policyModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700;">Policy Document</h3>
+            <button onclick="document.getElementById('policyModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
+        <div id="policyModalContent" style="padding: 2rem; overflow-y: auto; flex: 1; font-size: 0.9rem; line-height: 1.6; color: #334155;">
+            <!-- Content injected via JS -->
+        </div>
+        <div style="padding: 1rem 2rem; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
+            <button onclick="document.getElementById('policyModal').style.display='none'" style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">I Understand</button>
+        </div>
     </div>
 </div>
 
