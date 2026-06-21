@@ -673,11 +673,75 @@ function toggleSupportModal() {
             }).join('');
         };
 
+        function generateCombinedData() {
+            const dashboardData = window.dashboardData || {};
+            const keys = Object.keys(dashboardData).filter(k => k !== 'combined' && k !== 'leaderboard');
+            if (keys.length <= 1) return;
+            
+            let combined = {
+                name: "Combined Operations Overview",
+                targetRice: 0,
+                depositedRice: 0,
+                riceBalance: 0,
+                totalAllottedPaddy: 0,
+                balancePaddy: 0,
+                paddyAmt: 0,
+                bgAmount: 0,
+                freeBg: 0,
+                riceQualities: [],
+                pendingDOs: [],
+                gatePassStatus: [],
+                nearestBgs: []
+            };
+
+            let qualityMap = {};
+
+            keys.forEach(k => {
+                const md = dashboardData[k];
+                combined.targetRice += (md.targetRice || 0);
+                combined.depositedRice += (md.depositedRice || 0);
+                combined.riceBalance += (md.riceBalance || 0);
+                combined.totalAllottedPaddy += (md.totalAllottedPaddy || 0);
+                combined.balancePaddy += (md.balancePaddy || 0);
+                combined.paddyAmt += (md.paddyAmt || 0);
+                combined.bgAmount += (md.bgAmount || 0);
+                combined.freeBg += (md.freeBg || 0);
+                
+                // Merge arrays
+                if (md.pendingDOs) combined.pendingDOs = combined.pendingDOs.concat(md.pendingDOs);
+                if (md.gatePassStatus) combined.gatePassStatus = combined.gatePassStatus.concat(md.gatePassStatus);
+                if (md.nearestBgs) combined.nearestBgs = combined.nearestBgs.concat(md.nearestBgs);
+                
+                // Merge qualities
+                if (md.riceQualities) {
+                    md.riceQualities.forEach(rq => {
+                        if (rq.qualities) {
+                            Object.entries(rq.qualities).forEach(([qName, qQty]) => {
+                                if (!qualityMap[qName]) qualityMap[qName] = 0;
+                                qualityMap[qName] += qQty;
+                            });
+                        }
+                    });
+                }
+            });
+
+            if (Object.keys(qualityMap).length > 0) {
+                combined.riceQualities = [{ qualities: qualityMap }];
+            }
+            
+            // Sort merged arrays
+            combined.nearestBgs.sort((a, b) => (a.daysLeft || Infinity) - (b.daysLeft || Infinity));
+            
+            window.dashboardData['combined'] = combined;
+        }
+
         // Initialize the first view
         function initializeDashboardView() {
+            generateCombinedData();
+            
             const tabsContainer = document.getElementById('millerTabs');
             const dashboardData = window.dashboardData || {};
-            const keys = Object.keys(dashboardData);
+            const keys = Object.keys(dashboardData).filter(k => k !== 'leaderboard');
             
             // Generate Tabs
             if (keys.includes('combined')) {
@@ -705,7 +769,12 @@ function toggleSupportModal() {
             });
 
             // Activate first tab
-            const firstId = keys.includes('combined') && keys.length > 2 ? 'combined' : (keys.includes('combined') ? keys[1] : keys[0]);
+            let firstId;
+            if (keys.length > 1) {
+                firstId = 'combined';
+            } else {
+                firstId = keys[0];
+            }
             
             // Set initial active class
             const initialTab = document.querySelector(`.tab-btn[data-id="${firstId}"]`);
@@ -821,7 +890,10 @@ function toggleSupportModal() {
             const loggedInUser = localStorage.getItem('cmrs_user') || sessionStorage.getItem('cmrs_user');
             const loginOverlay = document.getElementById('loginOverlay');
             const paymentOverlay = document.getElementById('paymentOverlay');
+            const loadingOverlay = document.getElementById('globalLoadingOverlay');
             
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+
             if (loggedInUser && window.dashboardData && window.dashboardData[loggedInUser]) {
                 if (sessionStorage.getItem('payment_skipped')) {
                     if(loginOverlay) loginOverlay.style.display = 'none';

@@ -1,349 +1,501 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>CMRS PRO Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link href="style.css" rel="stylesheet"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CMRS PRO Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="style.css" rel="stylesheet" />
 </head>
+
 <body>
 
-<!-- LOGIN OVERLAY -->
-<div id="loginOverlay" style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; width: 100%; max-width: 420px; border-radius: 24px; padding: 2.5rem 2rem; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow: hidden;">
-        
-        <!-- Decorative bg blur -->
-        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(67, 24, 255, 0.1); filter: blur(40px); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -50px; left: -50px; width: 150px; height: 150px; background: rgba(37, 211, 102, 0.1); filter: blur(40px); border-radius: 50%;"></div>
+    <!-- LOADING OVERLAY -->
+    <div id="globalLoadingOverlay"
+        style="position: fixed; inset: 0; z-index: 10000; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        <h3 style="color: #0f172a; font-family: 'Outfit', sans-serif;">Loading CMRS PRO...</h3>
+    </div>
 
-        <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 1;">
-            <img src="logo.png" alt="CMRS Logo" style="height: 60px; margin-bottom: 1rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); border-radius: 8px; background: white; padding: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQzMThGRiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiPkM8L3RleHQ+PC9zdmc+';"/>
-            <h2 style="margin: 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">Welcome Back</h2>
-            <p style="margin: 0; color: #64748b; font-size: 0.9rem; margin-top: 0.4rem;">Sign in to CMRS PRO Dashboard</p>
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay"
+        style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: none; align-items: center; justify-content: center; padding: 1rem;">
+        <div
+            style="background: white; width: 100%; max-width: 420px; border-radius: 24px; padding: 2.5rem 2rem; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow: hidden;">
+
+            <!-- Decorative bg blur -->
+            <div
+                style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(67, 24, 255, 0.1); filter: blur(40px); border-radius: 50%;">
+            </div>
+            <div
+                style="position: absolute; bottom: -50px; left: -50px; width: 150px; height: 150px; background: rgba(37, 211, 102, 0.1); filter: blur(40px); border-radius: 50%;">
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 1;">
+                <img src="logo.png" alt="CMRS Logo"
+                    style="height: 60px; margin-bottom: 1rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); border-radius: 8px; background: white; padding: 4px;"
+                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQzMThGRiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiPkM8L3RleHQ+PC9zdmc+';" />
+                <h2 style="margin: 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">
+                    Welcome Back</h2>
+                <p style="margin: 0; color: #64748b; font-size: 0.9rem; margin-top: 0.4rem;">Sign in to CMRS PRO
+                    Dashboard</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" style="position: relative; z-index: 1;">
+                <div style="margin-bottom: 1.2rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Miller
+                        ID (Username)</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-user"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="loginUsername" required placeholder="e.g. MA441234"
+                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;"
+                            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';"
+                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.2rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Portal
+                        Password</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-lock"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="password" id="loginPassword" required placeholder="Enter password"
+                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;"
+                            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';"
+                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                    <label
+                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #475569; font-weight: 500;">
+                        <input type="checkbox" id="keepLoggedIn"
+                            style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">
+                        Keep me logged in permanently
+                    </label>
+                </div>
+
+                <button type="submit"
+                    style="width: 100%; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.25); transition: transform 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem;"
+                    onmouseover="this.style.transform='translateY(-2px)';"
+                    onmouseout="this.style.transform='translateY(0)';">
+                    Sign In <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <p id="loginError"
+                    style="color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; font-weight: 600;">
+                    Invalid Credentials. Please try again.</p>
+            </form>
         </div>
+    </div>
+    <!-- END LOGIN OVERLAY -->
 
-        <form id="loginForm" onsubmit="handleLogin(event)" style="position: relative; z-index: 1;">
-            <div style="margin-bottom: 1.2rem;">
-                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Miller ID (Username)</label>
-                <div style="position: relative;">
-                    <i class="fa-solid fa-user" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                    <input type="text" id="loginUsername" required placeholder="e.g. MA441234" style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+    <!-- PAYMENT OVERLAY (DUMMY) -->
+    <div id="paymentOverlay"
+        style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); align-items: center; justify-content: center; padding: 1rem;">
+        <div
+            style="background: white; width: 100%; max-width: 480px; border-radius: 24px; padding: 3rem 2rem; box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; text-align: center;">
+
+            <div
+                style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto;">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+
+            <h2 style="margin: 0; color: #166534; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Premium
+                Subscription</h2>
+            <p style="color: #475569; font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">You are currently
+                enjoying the trial phase of CMRS PRO. To unlock permanent access and live WhatsApp alerts, please
+                complete your payment.</p>
+
+            <div
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600; color: #475569;">Subscription Plan:</span>
+                    <span style="font-weight: 700; color: #0f172a;">Yearly Access</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: #475569;">Amount:</span>
+                    <span style="font-weight: 800; color: #22c55e; font-size: 1.2rem;">₹ 0000</span>
                 </div>
             </div>
 
-            <div style="margin-bottom: 1.2rem;">
-                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Portal Password</label>
-                <div style="position: relative;">
-                    <i class="fa-solid fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                    <input type="password" id="loginPassword" required placeholder="Enter password" style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+            <button onclick="alert('Payment Gateway Integration Pending. Proceeding to Dashboard.')"
+                style="width: 100%; background: #22c55e; color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25); transition: transform 0.2s; margin-bottom: 1rem;"
+                onmouseover="this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.transform='translateY(0)';">
+                Pay Now <i class="fa-solid fa-lock" style="margin-left: 0.3rem; font-size: 0.85rem;"></i>
+            </button>
+
+            <button onclick="skipPayment()"
+                style="background: none; border: none; color: #94a3b8; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.2s;"
+                onmouseover="this.style.color='#64748b';" onmouseout="this.style.color='#94a3b8';">
+                Skip for now (Trial Phase)
+            </button>
+        </div>
+    </div>
+    <!-- END PAYMENT OVERLAY -->
+    <nav class="navbar">
+        <div class="brand" style="display: flex; align-items: center; gap: 0.8rem;">
+            <img src="logo.png" alt="CMRS Logo"
+                style="height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); border-radius: 4px; background: white; padding: 4px;" />
+            <div style="display: flex; flex-direction: column;">
+                <div style="font-size: 1.2rem; font-weight: 700; line-height: 1.1;">CMRS PRO</div>
+                <span class="full-brand-name"
+                    style="font-size: 0.7rem; font-weight: 500; opacity: 0.85; letter-spacing: 0.5px;">Custom Milling
+                    Reporting System</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="darkModeBtn" onclick="toggleDarkMode()"
+                    style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 8px; border-radius: 50%; color: white; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="lang-toggle" onclick="toggleLanguage()"
+                    style="background: rgba(255,255,255,0.2); padding: 4px; border-radius: 20px; display: flex; align-items: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.3);">
+                    <span id="langEn"
+                        style="padding: 4px 12px; border-radius: 16px; background: white; color: var(--primary); font-size: 0.8rem; font-weight: 700; transition: all 0.3s;">EN</span>
+                    <span id="langHi"
+                        style="padding: 4px 12px; border-radius: 16px; color: white; font-size: 0.8rem; font-weight: 700; transition: all 0.3s; background: transparent;">HI</span>
                 </div>
             </div>
-
-            <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
-                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #475569; font-weight: 500;">
-                    <input type="checkbox" id="keepLoggedIn" style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">
-                    Keep me logged in permanently
-                </label>
+            <div class="nav-controls" id="millerTabs">
+                <!-- Tabs will be dynamically generated by JS -->
             </div>
-
-            <button type="submit" style="width: 100%; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.25); transition: transform 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
-                Sign In <i class="fa-solid fa-arrow-right"></i>
+            <button onclick="document.getElementById('addMillModal').style.display='flex'" class="btn"
+                style="background: var(--warning); color: var(--text-main); font-weight: 700; border: none; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; margin-left: 1rem; box-shadow: 0 4px 10px rgba(255, 206, 32, 0.3);"><i
+                    class="fa-solid fa-plus"></i> Add New Mill</button>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="page-header"
+            style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 class="page-title" id="viewTitle">Combined Overview</h1>
+                <p id="viewSubtitle" style="color: var(--text-muted); margin-top: 0.2rem;">Aggregated operational and
+                    financial metrics</p>
+            </div>
+            <button id="syncButton"
+                onclick="alert('Sync Initiated: In the live app, this will instantly fetch fresh data from Markfed for this specific mill only. (Backend API pending)')"
+                onmouseout="this.style.background='rgba(67, 24, 255, 0.1)'; this.style.color='var(--primary)'; this.querySelector('i').style.transform='rotate(0deg)';"
+                onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.querySelector('i').style.transform='rotate(180deg)';"
+                style="background: rgba(67, 24, 255, 0.1); color: var(--primary); border: 1px solid rgba(67, 24, 255, 0.2); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <i class="fa-solid fa-arrows-rotate" style="transition: transform 0.4s ease;"></i> Sync Live Data
             </button>
-            <p id="loginError" style="color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; font-weight: 600;">Invalid Credentials. Please try again.</p>
-        </form>
-    </div>
-</div>
-<!-- END LOGIN OVERLAY -->
-
-<!-- PAYMENT OVERLAY (DUMMY) -->
-<div id="paymentOverlay" style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); align-items: center; justify-content: center; padding: 1rem;">
-    <div style="background: white; width: 100%; max-width: 480px; border-radius: 24px; padding: 3rem 2rem; box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; text-align: center;">
-        
-        <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto;">
-            <i class="fa-solid fa-indian-rupee-sign"></i>
         </div>
-        
-        <h2 style="margin: 0; color: #166534; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Premium Subscription</h2>
-        <p style="color: #475569; font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">You are currently enjoying the trial phase of CMRS PRO. To unlock permanent access and live WhatsApp alerts, please complete your payment.</p>
-        
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 600; color: #475569;">Subscription Plan:</span>
-                <span style="font-weight: 700; color: #0f172a;">Yearly Access</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; color: #475569;">Amount:</span>
-                <span style="font-weight: 800; color: #22c55e; font-size: 1.2rem;">₹ 4,999</span>
-            </div>
-        </div>
-
-        <button onclick="alert('Payment Gateway Integration Pending. Proceeding to Dashboard.')" style="width: 100%; background: #22c55e; color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25); transition: transform 0.2s; margin-bottom: 1rem;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
-            Pay Now <i class="fa-solid fa-lock" style="margin-left: 0.3rem; font-size: 0.85rem;"></i>
-        </button>
-        
-        <button onclick="skipPayment()" style="background: none; border: none; color: #94a3b8; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#64748b';" onmouseout="this.style.color='#94a3b8';">
-            Skip for now (Trial Phase)
-        </button>
-    </div>
-</div>
-<!-- END PAYMENT OVERLAY -->
-<nav class="navbar">
-<div class="brand" style="display: flex; align-items: center; gap: 0.8rem;">
-<img src="logo.png" alt="CMRS Logo" style="height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); border-radius: 4px; background: white; padding: 4px;" />
-<div style="display: flex; flex-direction: column;">
-    <div style="font-size: 1.2rem; font-weight: 700; line-height: 1.1;">CMRS PRO</div>
-    <span class="full-brand-name" style="font-size: 0.7rem; font-weight: 500; opacity: 0.85; letter-spacing: 0.5px;">Custom Milling Reporting System</span>
-</div>
-        </div>
-<div style="display: flex; gap: 1rem; align-items: center;">
-<div style="display: flex; gap: 0.5rem;">
-<button id="darkModeBtn" onclick="toggleDarkMode()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 8px; border-radius: 50%; color: white; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
-<i class="fa-solid fa-moon"></i>
-</button>
-<div class="lang-toggle" onclick="toggleLanguage()" style="background: rgba(255,255,255,0.2); padding: 4px; border-radius: 20px; display: flex; align-items: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.3);">
-<span id="langEn" style="padding: 4px 12px; border-radius: 16px; background: white; color: var(--primary); font-size: 0.8rem; font-weight: 700; transition: all 0.3s;">EN</span>
-<span id="langHi" style="padding: 4px 12px; border-radius: 16px; color: white; font-size: 0.8rem; font-weight: 700; transition: all 0.3s; background: transparent;">HI</span>
-</div>
-</div>
-<div class="nav-controls" id="millerTabs">
-<!-- Tabs will be dynamically generated by JS -->
-</div>
-<button onclick="document.getElementById('addMillModal').style.display='flex'" class="btn" style="background: var(--warning); color: var(--text-main); font-weight: 700; border: none; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; margin-left: 1rem; box-shadow: 0 4px 10px rgba(255, 206, 32, 0.3);"><i class="fa-solid fa-plus"></i> Add New Mill</button>
-</div>
-</nav>
-<div class="container">
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-<div>
-<h1 class="page-title" id="viewTitle">Combined Overview</h1>
-<p id="viewSubtitle" style="color: var(--text-muted); margin-top: 0.2rem;">Aggregated operational and financial metrics</p>
-</div>
-<button id="syncButton" onclick="alert('Sync Initiated: In the live app, this will instantly fetch fresh data from Markfed for this specific mill only. (Backend API pending)')" onmouseout="this.style.background='rgba(67, 24, 255, 0.1)'; this.style.color='var(--primary)'; this.querySelector('i').style.transform='rotate(0deg)';" onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.querySelector('i').style.transform='rotate(180deg)';" style="background: rgba(67, 24, 255, 0.1); color: var(--primary); border: 1px solid rgba(67, 24, 255, 0.2); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-<i class="fa-solid fa-arrows-rotate" style="transition: transform 0.4s ease;"></i> Sync Live Data
-            </button>
-</div>
-<div id="mainDashboardContent">
-<div class="dashboard-grid">
-<!-- Rice WIP Progress -->
-<div class="card progress-card">
-<div class="progress-header flex-resp">
-<div>
-<div class="card-title" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-chart-pie" style="color: var(--secondary)"></i> Rice Deposit Status (WIP)</div>
-<div style="font-size: 0.85rem; color: var(--text-muted);">Deposited against Total Target (Paddy Lifting)</div>
-</div>
-<div style="text-align: right;">
-<div class="value-large" style="display: flex; align-items: baseline; justify-content: flex-end; gap: 0.3rem;">
-<span id="valDeposited" class="skeleton" style="color: var(--primary);">0.00</span>
-<span style="font-size: 1.15rem; color: var(--primary); font-weight: 700;">Qtls (<span id="valDepositedLots">0</span> L)</span>
-<span style="font-size: 1.25rem; font-weight: 500; color: #cbd5e1; margin: 0 0.2rem;">/</span>
-<span id="valTarget" class="skeleton" style="font-size: 1.5rem; color: var(--text-main);">0.00</span>
-<span style="font-size: 1.15rem; color: var(--text-main); font-weight: 700;">Qtls (<span id="valTargetLots">0</span> L)</span>
-</div>
-</div>
-</div>
-<div class="progress-track">
-<div class="progress-fill" id="progressFill"></div>
-</div>
-<div style="margin-top: 0.6rem; text-align: left;">
-<span style="color: var(--primary); font-weight: 700; background: rgba(79, 70, 229, 0.1); padding: 4px 12px; border-radius: 6px; display: inline-block; font-size: 0.85rem;">Deposited: <span id="valPercent">0%</span></span>
-</div>
-<div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch; margin-top: 1.5rem;">
-<!-- TOTAL PENDING (Main block with button) -->
-<div style="flex: 1 1 300px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.05)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(15, 23, 42, 0.1); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem;">
-<div>
-<div data-i18n="Total Pending" style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Total Pending</div>
-<div class="value-large" style="font-size: 2.2rem; display: flex; align-items: baseline; gap: 0.4rem;">
-<span id="valPending" class="skeleton" style="color: var(--danger);">0.00</span> <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">Qtls</span>
-</div>
-<div style="font-size: 1.05rem; font-weight: 700; color: #64748b; margin-top: 0.2rem;">
-<span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLots">0</span> Lots</span>
-</div>
-</div>
-<button onclick="document.getElementById('riceModal').style.display='flex'" onmouseout="this.style.transform='translateY(0)'" onmouseover="this.style.transform='translateY(-2px)'" style="background: var(--text-main); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(15, 23, 42, 0.2); transition: all 0.2s; white-space: nowrap; margin-top: 0.5rem;" title="View Detailed Quality Breakdown"><i class="fa-solid fa-layer-group"></i> Details</button>
-</div>
-<!-- FCI PENDING -->
-<div style="flex: 1 1 200px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
-<div style="font-size: 0.85rem; font-weight: 600; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">FCI Pending</div>
-<div class="value-large" style="font-size: 2.2rem; color: #d97706; display: flex; align-items: baseline; gap: 0.4rem;">
-<span id="valPendingFCI">0.00</span> <span style="font-size: 1.1rem; color: #b45309; font-weight: 600;">Qtls</span>
-</div>
-<div style="font-size: 1.05rem; font-weight: 700; color: #b45309; margin-top: 0.2rem;">
-<span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsFCI">0</span> Lots</span>
-</div>
-</div>
-<!-- NAN PENDING -->
-<div style="flex: 1 1 200px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
-<div style="font-size: 0.85rem; font-weight: 600; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">NAN Pending</div>
-<div class="value-large" style="font-size: 2.2rem; color: #2563eb; display: flex; align-items: baseline; gap: 0.4rem;">
-<span id="valPendingNAN">0.00</span> <span style="font-size: 1.1rem; color: #1d4ed8; font-weight: 600;">Qtls</span>
-</div>
-<div style="font-size: 1.05rem; font-weight: 700; color: #1d4ed8; margin-top: 0.2rem;">
-<span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsNAN">0</span> Lots</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Paddy Split Card (Moved to Top) -->
-<div class="card" style="grid-column: span 12; border-top: 4px solid var(--success); background: #ffffff;">
-<div class="flex-resp" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-<div>
-<div class="card-title" style="color: #065f46; margin-bottom: 0.5rem;"><i class="fa-solid fa-seedling text-success"></i> Paddy Account Status</div>
-<div class="value-subtitle">Total Paddy Issued vs Lifted from Society</div>
-</div>
-<div class="icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 55px; height: 55px; font-size: 1.6rem;"><i class="fa-solid fa-leaf"></i></div>
-</div>
-<div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
-<div style="flex: 1 1 200px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
-<div style="font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Total DO Qty</div>
-<div class="value-large" style="font-size: 2.2rem; display: flex; align-items: baseline; gap: 0.4rem;">
-<span id="valTotalDO" class="skeleton">0.00</span> <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">Qtls</span>
-</div>
-<div style="display: none;"><span id="valDODisplay"></span></div> <!-- Hidden for JS compat -->
-</div>
-<div style="flex: 1 1 200px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
-<div style="font-size: 0.85rem; font-weight: 600; color: #be123c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Lifted Paddy</div>
-<div class="value-large" style="font-size: 2.2rem; color: #e11d48; display: flex; align-items: baseline; gap: 0.4rem;">
-<span id="valLiftedPaddy" class="skeleton">0.00</span> <span style="font-size: 1.1rem; color: #be123c; font-weight: 600;">Qtls</span>
-</div>
-</div>
-<div style="flex: 1 1 250px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.15)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: var(--shadow-sm);">
-<div>
-<div style="font-size: 0.9rem; font-weight: 700; color: #065f46; text-transform: uppercase; margin-bottom: 0.5rem;">= Balance to Lift</div>
-<div style="font-weight: 800; color: #047857; font-size: 2rem; display: flex; align-items: baseline; gap: 0.3rem;">
-<span id="valBalancePaddy" class="skeleton">0.00</span>
-<span style="font-size: 1rem; font-weight: 600; opacity: 0.9;">Qtls</span>
-</div>
-</div>
-<button onclick="document.getElementById('doModal').style.display='flex'" onmouseout="this.style.transform='translateY(0)'" onmouseover="this.style.transform='translateY(-2px)'" style="background: #059669; color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2); transition: all 0.2s; margin-top: 0.5rem;"><i class="fa-solid fa-file-invoice"></i> Details</button>
-</div>
-</div>
-</div>
-<!-- Gate Pass Reconciliation -->
-<div class="card" style="grid-column: span 12; background: #ffffff;">
-<div class="flex-resp" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-<div>
-<div class="card-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-file-circle-exclamation text-warning"></i> Pending Paperwork (Gate Passes)</div>
-<div class="value-subtitle">Showing only Gate Passes pending for CMR approval</div>
-</div>
-<button class="btn" onclick="document.getElementById('gpModal').style.display='flex'" style="background: var(--bg-body); color: var(--text-main);"><i class="fa-solid fa-list text-primary"></i> View All Lots</button>
-</div>
-<div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 1.5rem;">
-<div style="flex: 1 1 200px;">
-<div class="value-subtitle">Approved Lots (CMR Processed)</div>
-<div class="value-large" style="color: var(--success); font-size: 1.8rem;"><span id="valGpApproved">0.00</span> <span style="font-size: 1rem; color: var(--text-muted);">Qtls</span></div>
-</div>
-<div style="flex: 1 1 200px;">
-<div class="value-subtitle">Pending Lots (Paperwork Pending)</div>
-<div class="value-large" style="color: var(--danger); font-size: 1.8rem;"><span id="valGpPending">0.00</span> <span style="font-size: 1rem; color: var(--text-muted);">Qtls</span></div>
-</div>
-</div>
-<div style="overflow-x: auto;">
-<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-<thead>
-<tr style="background: var(--bg-body); color: var(--text-muted);">
-<th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Date</th>
-<th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Agreement No</th>
-<th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
-<th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">Quantity</th>
-<th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">Action Required</th>
-</tr>
-</thead>
-<tbody id="gpTableBody">
-<!-- Injected by JS -->
-</tbody>
-</table></div>
-</div>
-<!-- KPI Row -->
-<div class="kpi-row">
-<!-- Active BG Card -->
-<div class="card kpi-card kpi-bg">
-<div class="flex-resp" style="display: flex; justify-content: space-between; align-items: flex-start;">
-<div>
-<div class="card-title"><i class="fa-solid fa-shield-check text-primary"></i> Active Bank Guarantee</div>
-<div class="value-large skeleton" id="valBG">₹ 0.00</div>
-<div class="value-subtitle" style="margin-top: 0.5rem;">Total secured guarantee amount</div>
-<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
-<button class="btn" onclick="document.getElementById('allBGsModal').style.display='flex'" style="background: rgba(67, 24, 255, 0.1); color: var(--primary); border: 1px solid rgba(67, 24, 255, 0.2); padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
-<i class="fa-solid fa-list"></i> View Details
-                                </button>
-<button class="btn" id="btnUploadSecurity" onclick="document.getElementById('uploadSecurityModal').style.display='flex'" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 6px rgba(67, 24, 255, 0.2);">
-<i class="fa-solid fa-cloud-arrow-up"></i> Upload Security
-                                </button>
-</div>
-</div>
-<div class="icon-box" style="background: rgba(67, 24, 255, 0.1); color: var(--primary);"><i class="fa-solid fa-vault"></i></div>
-</div>
-</div>
-<!-- Free BG Card -->
-<div class="card kpi-card kpi-free" style="background: linear-gradient(180deg, #ffffff, #fff5f5);">
-<div class="flex-resp" style="display: flex; justify-content: space-between; align-items: flex-start;">
-<div>
-<div class="card-title"><i class="fa-solid fa-scale-unbalanced text-danger"></i> Free BG Status</div>
-<div class="value-large skeleton" id="valFreeBG">₹ 0.00</div>
-<div class="value-subtitle" style="margin-top: 0.5rem;">Liability deficit (BG - Paddy Amt)</div>
-</div>
-<div class="icon-box" style="background: rgba(238, 93, 80, 0.1); color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-</div>
-</div>
-</div>
-<!-- Sections Row -->
-<div class="section-panel" style="grid-column: span 12;">
-<div class="card" style="height: 100%;">
-<div class="card-title"><i class="fa-solid fa-boxes-stacked text-success"></i> Gunny Bags Inventory</div>
-<p class="value-subtitle">Bardana availability at mill premises</p>
-<div class="bags-grid">
-<div class="bag-box">
-<i class="fa-solid fa-box"></i>
-<div class="bag-val" id="valNewBags">0</div>
-<div class="bag-label">New Bags</div>
-</div>
-<div class="bag-box">
-<i class="fa-solid fa-recycle"></i>
-<div class="bag-val" id="valOldBags">0</div>
-<div class="bag-label">Old Bags</div>
-</div>
-<div class="bag-box">
-<i class="fa-solid fa-cubes"></i>
-<div class="bag-val" id="valPdsBags">0</div>
-<div class="bag-label">PDS Bags</div>
-</div>
-</div>
-</div>
-</div>
-<div class="section-panel">
-<div class="card" style="height: 100%;">
-<div class="card-title" style="color: var(--text-main); font-size: 1.1rem;"><i class="fa-regular fa-clock text-warning"></i> Upcoming BG Expiries</div>
-<p class="value-subtitle">Tracking Bank Guarantees expiring shortly</p>
-<div class="alert-list" id="bgAlertsList">
-<!-- Injected by JS -->
-</div>
-</div>
-</div>
-<!-- Letter Generator (Hidden on Combined) -->
-<div class="section-panel" id="letterGeneratorSection">
-<div class="card letter-generator" style="height: 100%; display: block;">
-<div class="card-title" style="color: var(--text-main); font-size: 1.1rem;"><i class="fa-solid fa-file-signature text-primary"></i> Official Letter Generator</div>
-<p class="value-subtitle" style="margin-bottom: 1.5rem;">Generate automated PDFs directly on your company Letterhead.</p>
-<div class="generator-controls">
-<div class="input-group">
-<label>1. Upload Letterhead Image (One-Time)</label>
-<input accept="image/*" id="letterheadUpload" type="file"/>
-</div>
-<div class="input-group">
-<label>2. Select Letter Subject</label>
-<select id="letterSubject">
-<option value="bg_renewal">Request for BG Renewal</option>
-<option value="do_extension">Request for DO Extension</option>
-<option value="custom">Custom Letter</option>
-</select>
-</div>
-</div>
-<div class="input-group" style="margin-bottom: 1rem;">
-<label>3. Edit Letter Content</label>
-<textarea id="letterContent">To,
+        <div id="mainDashboardContent">
+            <div class="dashboard-grid">
+                <!-- Rice WIP Progress -->
+                <div class="card progress-card">
+                    <div class="progress-header flex-resp">
+                        <div>
+                            <div class="card-title" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-chart-pie"
+                                    style="color: var(--secondary)"></i> Rice Deposit Status (WIP)</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Deposited against Total Target
+                                (Paddy Lifting)</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="value-large"
+                                style="display: flex; align-items: baseline; justify-content: flex-end; gap: 0.3rem;">
+                                <span id="valDeposited" class="skeleton" style="color: var(--primary);">0.00</span>
+                                <span style="font-size: 1.15rem; color: var(--primary); font-weight: 700;">Qtls (<span
+                                        id="valDepositedLots">0</span> L)</span>
+                                <span
+                                    style="font-size: 1.25rem; font-weight: 500; color: #cbd5e1; margin: 0 0.2rem;">/</span>
+                                <span id="valTarget" class="skeleton"
+                                    style="font-size: 1.5rem; color: var(--text-main);">0.00</span>
+                                <span style="font-size: 1.15rem; color: var(--text-main); font-weight: 700;">Qtls (<span
+                                        id="valTargetLots">0</span> L)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div style="margin-top: 0.6rem; text-align: left;">
+                        <span
+                            style="color: var(--primary); font-weight: 700; background: rgba(79, 70, 229, 0.1); padding: 4px 12px; border-radius: 6px; display: inline-block; font-size: 0.85rem;">Deposited:
+                            <span id="valPercent">0%</span></span>
+                    </div>
+                    <div class="flex-resp"
+                        style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch; margin-top: 1.5rem;">
+                        <!-- TOTAL PENDING (Main block with button) -->
+                        <div
+                            style="flex: 1 1 300px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.05)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(15, 23, 42, 0.1); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <div data-i18n="Total Pending"
+                                    style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                    Total Pending</div>
+                                <div class="value-large"
+                                    style="font-size: 2.2rem; display: flex; align-items: baseline; gap: 0.4rem;">
+                                    <span id="valPending" class="skeleton" style="color: var(--danger);">0.00</span>
+                                    <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">Qtls</span>
+                                </div>
+                                <div style="font-size: 1.05rem; font-weight: 700; color: #64748b; margin-top: 0.2rem;">
+                                    <span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLots">0</span>
+                                        Lots</span>
+                                </div>
+                            </div>
+                            <button onclick="document.getElementById('riceModal').style.display='flex'"
+                                onmouseout="this.style.transform='translateY(0)'"
+                                onmouseover="this.style.transform='translateY(-2px)'"
+                                style="background: var(--text-main); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(15, 23, 42, 0.2); transition: all 0.2s; white-space: nowrap; margin-top: 0.5rem;"
+                                title="View Detailed Quality Breakdown"><i class="fa-solid fa-layer-group"></i>
+                                Details</button>
+                        </div>
+                        <!-- FCI PENDING -->
+                        <div
+                            style="flex: 1 1 200px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            <div
+                                style="font-size: 0.85rem; font-weight: 600; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                FCI Pending</div>
+                            <div class="value-large"
+                                style="font-size: 2.2rem; color: #d97706; display: flex; align-items: baseline; gap: 0.4rem;">
+                                <span id="valPendingFCI">0.00</span> <span
+                                    style="font-size: 1.1rem; color: #b45309; font-weight: 600;">Qtls</span>
+                            </div>
+                            <div style="font-size: 1.05rem; font-weight: 700; color: #b45309; margin-top: 0.2rem;">
+                                <span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsFCI">0</span>
+                                    Lots</span>
+                            </div>
+                        </div>
+                        <!-- NAN PENDING -->
+                        <div
+                            style="flex: 1 1 200px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            <div
+                                style="font-size: 0.85rem; font-weight: 600; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                NAN Pending</div>
+                            <div class="value-large"
+                                style="font-size: 2.2rem; color: #2563eb; display: flex; align-items: baseline; gap: 0.4rem;">
+                                <span id="valPendingNAN">0.00</span> <span
+                                    style="font-size: 1.1rem; color: #1d4ed8; font-weight: 600;">Qtls</span>
+                            </div>
+                            <div style="font-size: 1.05rem; font-weight: 700; color: #1d4ed8; margin-top: 0.2rem;">
+                                <span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsNAN">0</span>
+                                    Lots</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Paddy Split Card (Moved to Top) -->
+                <div class="card"
+                    style="grid-column: span 12; border-top: 4px solid var(--success); background: #ffffff;">
+                    <div class="flex-resp"
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                        <div>
+                            <div class="card-title" style="color: #065f46; margin-bottom: 0.5rem;"><i
+                                    class="fa-solid fa-seedling text-success"></i> Paddy Account Status</div>
+                            <div class="value-subtitle">Total Paddy Issued vs Lifted from Society</div>
+                        </div>
+                        <div class="icon-box"
+                            style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 55px; height: 55px; font-size: 1.6rem;">
+                            <i class="fa-solid fa-leaf"></i></div>
+                    </div>
+                    <div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
+                        <div
+                            style="flex: 1 1 200px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            <div
+                                style="font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                Total DO Qty</div>
+                            <div class="value-large"
+                                style="font-size: 2.2rem; display: flex; align-items: baseline; gap: 0.4rem;">
+                                <span id="valTotalDO" class="skeleton">0.00</span> <span
+                                    style="font-size: 1.1rem; color: #64748b; font-weight: 600;">Qtls</span>
+                            </div>
+                            <div style="display: none;"><span id="valDODisplay"></span></div>
+                            <!-- Hidden for JS compat -->
+                        </div>
+                        <div
+                            style="flex: 1 1 200px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            <div
+                                style="font-size: 0.85rem; font-weight: 600; color: #be123c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                Lifted Paddy</div>
+                            <div class="value-large"
+                                style="font-size: 2.2rem; color: #e11d48; display: flex; align-items: baseline; gap: 0.4rem;">
+                                <span id="valLiftedPaddy" class="skeleton">0.00</span> <span
+                                    style="font-size: 1.1rem; color: #be123c; font-weight: 600;">Qtls</span>
+                            </div>
+                        </div>
+                        <div
+                            style="flex: 1 1 250px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.15)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: var(--shadow-sm);">
+                            <div>
+                                <div
+                                    style="font-size: 0.9rem; font-weight: 700; color: #065f46; text-transform: uppercase; margin-bottom: 0.5rem;">
+                                    = Balance to Lift</div>
+                                <div
+                                    style="font-weight: 800; color: #047857; font-size: 2rem; display: flex; align-items: baseline; gap: 0.3rem;">
+                                    <span id="valBalancePaddy" class="skeleton">0.00</span>
+                                    <span style="font-size: 1rem; font-weight: 600; opacity: 0.9;">Qtls</span>
+                                </div>
+                            </div>
+                            <button onclick="document.getElementById('doModal').style.display='flex'"
+                                onmouseout="this.style.transform='translateY(0)'"
+                                onmouseover="this.style.transform='translateY(-2px)'"
+                                style="background: #059669; color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2); transition: all 0.2s; margin-top: 0.5rem;"><i
+                                    class="fa-solid fa-file-invoice"></i> Details</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Gate Pass Reconciliation -->
+                <div class="card" style="grid-column: span 12; background: #ffffff;">
+                    <div class="flex-resp"
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                        <div>
+                            <div class="card-title" style="margin-bottom: 0.5rem;"><i
+                                    class="fa-solid fa-file-circle-exclamation text-warning"></i> Pending Paperwork
+                                (Gate Passes)</div>
+                            <div class="value-subtitle">Showing only Gate Passes pending for CMR approval</div>
+                        </div>
+                        <button class="btn" onclick="document.getElementById('gpModal').style.display='flex'"
+                            style="background: var(--bg-body); color: var(--text-main);"><i
+                                class="fa-solid fa-list text-primary"></i> View All Lots</button>
+                    </div>
+                    <div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 1.5rem;">
+                        <div style="flex: 1 1 200px;">
+                            <div class="value-subtitle">Approved Lots (CMR Processed)</div>
+                            <div class="value-large" style="color: var(--success); font-size: 1.8rem;"><span
+                                    id="valGpApproved">0.00</span> <span
+                                    style="font-size: 1rem; color: var(--text-muted);">Qtls</span></div>
+                        </div>
+                        <div style="flex: 1 1 200px;">
+                            <div class="value-subtitle">Pending Lots (Paperwork Pending)</div>
+                            <div class="value-large" style="color: var(--danger); font-size: 1.8rem;"><span
+                                    id="valGpPending">0.00</span> <span
+                                    style="font-size: 1rem; color: var(--text-muted);">Qtls</span></div>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: var(--bg-body); color: var(--text-muted);">
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Date</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Agreement No</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">
+                                        Quantity</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">
+                                        Action Required</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gpTableBody">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- KPI Row -->
+                <div class="kpi-row">
+                    <!-- Active BG Card -->
+                    <div class="card kpi-card kpi-bg">
+                        <div class="flex-resp"
+                            style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div class="card-title"><i class="fa-solid fa-shield-check text-primary"></i> Active
+                                    Bank Guarantee</div>
+                                <div class="value-large skeleton" id="valBG">₹ 0.00</div>
+                                <div class="value-subtitle" style="margin-top: 0.5rem;">Total secured guarantee amount
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                                    <button class="btn"
+                                        onclick="document.getElementById('allBGsModal').style.display='flex'"
+                                        style="background: rgba(67, 24, 255, 0.1); color: var(--primary); border: 1px solid rgba(67, 24, 255, 0.2); padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                                        <i class="fa-solid fa-list"></i> View Details
+                                    </button>
+                                    <button class="btn" id="btnUploadSecurity"
+                                        onclick="document.getElementById('uploadSecurityModal').style.display='flex'"
+                                        style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 6px rgba(67, 24, 255, 0.2);">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Security
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="icon-box" style="background: rgba(67, 24, 255, 0.1); color: var(--primary);"><i
+                                    class="fa-solid fa-vault"></i></div>
+                        </div>
+                    </div>
+                    <!-- Free BG Card -->
+                    <div class="card kpi-card kpi-free" style="background: linear-gradient(180deg, #ffffff, #fff5f5);">
+                        <div class="flex-resp"
+                            style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div class="card-title"><i class="fa-solid fa-scale-unbalanced text-danger"></i> Free BG
+                                    Status</div>
+                                <div class="value-large skeleton" id="valFreeBG">₹ 0.00</div>
+                                <div class="value-subtitle" style="margin-top: 0.5rem;">Liability deficit (BG - Paddy
+                                    Amt)</div>
+                            </div>
+                            <div class="icon-box" style="background: rgba(238, 93, 80, 0.1); color: var(--danger);"><i
+                                    class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sections Row -->
+                <div class="section-panel" style="grid-column: span 12;">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-title"><i class="fa-solid fa-boxes-stacked text-success"></i> Gunny Bags
+                            Inventory</div>
+                        <p class="value-subtitle">Bardana availability at mill premises</p>
+                        <div class="bags-grid">
+                            <div class="bag-box">
+                                <i class="fa-solid fa-box"></i>
+                                <div class="bag-val" id="valNewBags">0</div>
+                                <div class="bag-label">New Bags</div>
+                            </div>
+                            <div class="bag-box">
+                                <i class="fa-solid fa-recycle"></i>
+                                <div class="bag-val" id="valOldBags">0</div>
+                                <div class="bag-label">Old Bags</div>
+                            </div>
+                            <div class="bag-box">
+                                <i class="fa-solid fa-cubes"></i>
+                                <div class="bag-val" id="valPdsBags">0</div>
+                                <div class="bag-label">PDS Bags</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-panel">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-title" style="color: var(--text-main); font-size: 1.1rem;"><i
+                                class="fa-regular fa-clock text-warning"></i> Upcoming BG Expiries</div>
+                        <p class="value-subtitle">Tracking Bank Guarantees expiring shortly</p>
+                        <div class="alert-list" id="bgAlertsList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Letter Generator (Hidden on Combined) -->
+                <div class="section-panel" id="letterGeneratorSection">
+                    <div class="card letter-generator" style="height: 100%; display: block;">
+                        <div class="card-title" style="color: var(--text-main); font-size: 1.1rem;"><i
+                                class="fa-solid fa-file-signature text-primary"></i> Official Letter Generator</div>
+                        <p class="value-subtitle" style="margin-bottom: 1.5rem;">Generate automated PDFs directly on
+                            your company Letterhead.</p>
+                        <div class="generator-controls">
+                            <div class="input-group">
+                                <label>1. Upload Letterhead Image (One-Time)</label>
+                                <input accept="image/*" id="letterheadUpload" type="file" />
+                            </div>
+                            <div class="input-group">
+                                <label>2. Select Letter Subject</label>
+                                <select id="letterSubject">
+                                    <option value="bg_renewal">Request for BG Renewal</option>
+                                    <option value="do_extension">Request for DO Extension</option>
+                                    <option value="custom">Custom Letter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 1rem;">
+                            <label>3. Edit Letter Content</label>
+                            <textarea id="letterContent">To,
 The District Marketing Officer (DMO),
 [District Name]
 
@@ -356,342 +508,523 @@ Please find enclosed the request to renew the Bank Guarantee No. [BG Number] amo
 Thanking you,
 
 Authorized Signatory</textarea>
-</div>
-<button class="btn" id="generatePdfBtn"><i class="fa-solid fa-download"></i> Generate &amp; Download PDF</button>
-<p id="letterheadStatus" style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem; display: none;"><i class="fa-solid fa-check"></i> Letterhead Saved.</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Hidden Canvas for PDF Generation -->
-<div id="letterPreview">
-<div class="letter-content-render" id="renderText"></div>
-</div>
-<!-- Pending DO Details Modal -->
-<div id="doModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-<div style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-<div style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-<div>
-<h3 style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-truck-ramp-box" style="color: var(--success);"></i> Pending Delivery Orders (DO)</h3>
-<p style="margin: 0; color: #64748b; font-size: 0.85rem; margin-top: 0.3rem;">Remaining paddy balance summarized by date, center, and type.</p>
-</div>
-<button onclick="document.getElementById('doModal').style.display='none'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';" onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';" style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
-</div>
-<div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
-<div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
-<thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-<tr>
-<th style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">DO Date &amp; Center</th>
-<th style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: center;">Paddy Type</th>
-<th style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: right;">Pending Balance</th>
-</tr>
-</thead>
-<tbody id="doModalBody">
-<!-- JS Injection -->
-</tbody>
-</table>
-</div>
-</div>
-<div style="padding: 1.2rem 2rem; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right;">
-<button onclick="document.getElementById('doModal').style.display='none'" onmouseout="this.style.background='var(--success)'" onmouseover="this.style.background='#04b083'" style="background: var(--success); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Close</button>
-</div>
-</div>
-</div>
-<!-- Rice Details Modal -->
-<div id="riceModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-<div style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-<div style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-<h3 style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
-<div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
-<i class="fa-solid fa-layer-group" style="color: #4318FF; font-size: 1.1rem;"></i>
-</div>
-                    Pending Rice Details
-                </h3>
-<button onclick="document.getElementById('riceModal').style.display='none'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';" onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';" style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
-</div>
-<div id="riceModalBodyContainer" style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
-<div id="riceModalBody" style="display: flex; flex-direction: column; gap: 1rem;">
-<!-- Injected by JS -->
-</div>
-</div>
-</div>
-</div>
-<!-- Gate Pass Modal -->
-<div id="gpModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-<div style="background: white; border-radius: 12px; width: 100%; max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-<div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-<h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main);"><i class="fa-solid fa-list-check text-primary"></i> Full Lot Details (Agreement Wise)</h3>
-<button onclick="document.getElementById('gpModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
-</div>
-<div id="agreementTabs" style="padding: 1rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.5rem; overflow-x: auto; background: #ffffff;">
-<!-- Buttons injected by JS -->
-</div>
-<div style="padding: 0; overflow-y: auto; flex: 1; background: #ffffff;">
-<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
-<thead>
-<tr style="background: var(--bg-body); color: var(--text-muted); position: sticky; top: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">S.No</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">GP Date</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Approval Date</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">CMR Center</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">Quantity</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Commodity</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Bag Year</th>
-<th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">Status</th>
-</tr>
-</thead>
-<tbody id="gpModalTableBody">
-<!-- Injected by JS -->
-</tbody>
-</table></div>
-</div>
-</div>
-</div>
-<!-- All BGs Modal -->
-<div id="allBGsModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-<div style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-<div style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-<h3 style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
-<div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
-<i class="fa-solid fa-vault" style="color: #4318FF; font-size: 1.1rem;"></i>
-</div>
+                        </div>
+                        <button class="btn" id="generatePdfBtn"><i class="fa-solid fa-download"></i> Generate &amp;
+                            Download PDF</button>
+                        <p id="letterheadStatus"
+                            style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem; display: none;"><i
+                                class="fa-solid fa-check"></i> Letterhead Saved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hidden Canvas for PDF Generation -->
+        <div id="letterPreview">
+            <div class="letter-content-render" id="renderText"></div>
+        </div>
+        <!-- Pending DO Details Modal -->
+        <div id="doModal"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+            <div
+                style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                <div
+                    style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+                    <div>
+                        <h3
+                            style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-truck-ramp-box" style="color: var(--success);"></i> Pending Delivery
+                            Orders (DO)</h3>
+                        <p style="margin: 0; color: #64748b; font-size: 0.85rem; margin-top: 0.3rem;">Remaining paddy
+                            balance summarized by date, center, and type.</p>
+                    </div>
+                    <button onclick="document.getElementById('doModal').style.display='none'"
+                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+                        style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                </div>
+                <div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
+                    <div
+                        style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                            <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                <tr>
+                                    <th
+                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        DO Date &amp; Center</th>
+                                    <th
+                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: center;">
+                                        Paddy Type</th>
+                                    <th
+                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: right;">
+                                        Pending Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doModalBody">
+                                <!-- JS Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div
+                    style="padding: 1.2rem 2rem; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right;">
+                    <button onclick="document.getElementById('doModal').style.display='none'"
+                        onmouseout="this.style.background='var(--success)'"
+                        onmouseover="this.style.background='#04b083'"
+                        style="background: var(--success); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Close</button>
+                </div>
+            </div>
+        </div>
+        <!-- Rice Details Modal -->
+        <div id="riceModal"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+            <div
+                style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                <div
+                    style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+                    <h3
+                        style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
+                        <div
+                            style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-layer-group" style="color: #4318FF; font-size: 1.1rem;"></i>
+                        </div>
+                        Pending Rice Details
+                    </h3>
+                    <button onclick="document.getElementById('riceModal').style.display='none'"
+                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+                        style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                </div>
+                <div id="riceModalBodyContainer"
+                    style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
+                    <div id="riceModalBody" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Gate Pass Modal -->
+        <div id="gpModal"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+            <div
+                style="background: white; border-radius: 12px; width: 100%; max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                <div
+                    style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main);"><i
+                            class="fa-solid fa-list-check text-primary"></i> Full Lot Details (Agreement Wise)</h3>
+                    <button onclick="document.getElementById('gpModal').style.display='none'"
+                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
+                </div>
+                <div id="agreementTabs"
+                    style="padding: 1rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.5rem; overflow-x: auto; background: #ffffff;">
+                    <!-- Buttons injected by JS -->
+                </div>
+                <div style="padding: 0; overflow-y: auto; flex: 1; background: #ffffff;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                        <thead>
+                            <tr
+                                style="background: var(--bg-body); color: var(--text-muted); position: sticky; top: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">S.No</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">GP Date</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Approval Date</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">CMR Center</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">
+                                    Quantity</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Commodity</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Bag Year</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">
+                                    Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gpModalTableBody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- All BGs Modal -->
+    <div id="allBGsModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
+        <div
+            style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div
+                style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+                <h3
+                    style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-vault" style="color: #4318FF; font-size: 1.1rem;"></i>
+                    </div>
                     Active Bank Guarantees
                 </h3>
-<button onclick="document.getElementById('allBGsModal').style.display='none'" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';" onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';" style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
-</div>
-<div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
-<div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
-<thead>
-<tr style="background: #f1f5f9; color: #475569; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
-<th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">BG No &amp; Bank</th>
-<th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">Expiry Date</th>
-<th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">Amount</th>
-</tr>
-</thead>
-<tbody id="allBGsModalBody">
-<!-- Injected by JS -->
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<!-- end mainDashboardContent -->
-<!-- LEADERBOARD SECTION -->
-<div id="leaderboard-section" style="display: none;">
-<div class="card" style="margin-bottom: 2rem;">
-<div class="flex-resp" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-<h3 class="card-title" style="margin: 0;"><i class="fa-solid fa-trophy" style="color: #FFD700;"></i> रायपुर जिला - टॉप मिलर्स (लीडरबोर्ड)</h3>
-<div style="font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 8px;">
-<i class="fa-solid fa-info-circle"></i> यह लिस्ट धान के विरुद्ध चावल जमा की <b>रफ़्तार (%)</b> के आधार पर है।
+                <button onclick="document.getElementById('allBGsModal').style.display='none'"
+                    onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+                    onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+                    style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+            </div>
+            <div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
+                <div
+                    style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                        <thead>
+                            <tr
+                                style="background: #f1f5f9; color: #475569; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">BG
+                                    No &amp; Bank</th>
+                                <th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">
+                                    Expiry Date</th>
+                                <th
+                                    style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">
+                                    Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allBGsModalBody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end mainDashboardContent -->
+    <!-- LEADERBOARD SECTION -->
+    <div id="leaderboard-section" style="display: none;">
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="flex-resp"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 class="card-title" style="margin: 0;"><i class="fa-solid fa-trophy" style="color: #FFD700;"></i>
+                    रायपुर जिला - टॉप मिलर्स (लीडरबोर्ड)</h3>
+                <div
+                    style="font-size: 0.85rem; color: var(--text-muted); background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 8px;">
+                    <i class="fa-solid fa-info-circle"></i> यह लिस्ट धान के विरुद्ध चावल जमा की <b>रफ़्तार (%)</b> के
+                    आधार पर है।
+                </div>
+            </div>
+            <!-- SEARCH BAR -->
+            <div style="margin-bottom: 1.5rem; position: relative;">
+                <i class="fa-solid fa-search"
+                    style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                <input id="millerSearch" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
+                    onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 24, 255, 0.1)';"
+                    oninput="filterLeaderboard()" placeholder="मिलर का नाम या MA Code लिखकर सर्च करें..."
+                    style="width: 100%; padding: 0.8rem 1rem 0.8rem 3rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s;"
+                    type="text" />
+            </div>
+            <!-- END SEARCH BAR -->
+            <div class="table-responsive">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr
+                            style="background: var(--bg-color); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
+                            <th
+                                style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border-light); width: 80px;">
+                                रैंक</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border-light);">
+                                मिलर का नाम</th>
+                            <th style="padding: 1rem; text-align: right; border-bottom: 2px solid var(--border-light);">
+                                धान उठाव (Qtls)</th>
+                            <th style="padding: 1rem; text-align: right; border-bottom: 2px solid var(--border-light);">
+                                चावल जमा (Qtls)</th>
+                            <th
+                                style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border-light); width: 250px;">
+                                जमा प्रतिशत (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTableBody">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- END LEADERBOARD SECTION -->
+    <script src="data.js"></script>
+
+    <!-- Upload Security Modal -->
+    <div class="modal" id="uploadSecurityModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="card"
+            style="width: 100%; max-width: 600px; padding: 2rem; border-radius: 16px; position: relative; max-height: 90vh; overflow-y: auto;">
+            <button onclick="document.getElementById('uploadSecurityModal').style.display='none'"
+                style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
+            <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem;"><i
+                    class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload New Security (BG/FDR/PDC)</h3>
+            <form id="uploadSecurityForm"
+                onsubmit="event.preventDefault(); alert('Security details submitted successfully for review!'); document.getElementById('uploadSecurityModal').style.display='none'; this.reset(); document.getElementById('fileName').innerText='';">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Security
+                            Type <span style="color: red;">*</span></label>
+                        <select required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                            <option value="">Select Type</option>
+                            <option value="BG">Bank Guarantee (BG)</option>
+                            <option value="FDR">FDR</option>
+                            <option value="PDC">Post Dated Cheque (PDC)</option>
+                        </select>
                     </div>
-</div>
-<!-- SEARCH BAR -->
-<div style="margin-bottom: 1.5rem; position: relative;">
-<i class="fa-solid fa-search" style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-<input id="millerSearch" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 24, 255, 0.1)';" oninput="filterLeaderboard()" placeholder="मिलर का नाम या MA Code लिखकर सर्च करें..." style="width: 100%; padding: 0.8rem 1rem 0.8rem 3rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s;" type="text"/>
-</div>
-<!-- END SEARCH BAR -->
-<div class="table-responsive">
-<table style="width: 100%; border-collapse: collapse;">
-<thead>
-<tr style="background: var(--bg-color); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">
-<th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border-light); width: 80px;">रैंक</th>
-<th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border-light);">मिलर का नाम</th>
-<th style="padding: 1rem; text-align: right; border-bottom: 2px solid var(--border-light);">धान उठाव (Qtls)</th>
-<th style="padding: 1rem; text-align: right; border-bottom: 2px solid var(--border-light);">चावल जमा (Qtls)</th>
-<th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border-light); width: 250px;">जमा प्रतिशत (%)</th>
-</tr>
-</thead>
-<tbody id="leaderboardTableBody">
-<!-- Filled by JS -->
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- END LEADERBOARD SECTION -->
-<script src="data.js"></script>
-
-<!-- Upload Security Modal -->
-<div class="modal" id="uploadSecurityModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-<div class="card" style="width: 100%; max-width: 600px; padding: 2rem; border-radius: 16px; position: relative; max-height: 90vh; overflow-y: auto;">
-<button onclick="document.getElementById('uploadSecurityModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
-<h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem;"><i class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload New Security (BG/FDR/PDC)</h3>
-<form id="uploadSecurityForm" onsubmit="event.preventDefault(); alert('Security details submitted successfully for review!'); document.getElementById('uploadSecurityModal').style.display='none'; this.reset(); document.getElementById('fileName').innerText='';">
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Security Type <span style="color: red;">*</span></label>
-<select required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
-<option value="">Select Type</option>
-<option value="BG">Bank Guarantee (BG)</option>
-<option value="FDR">FDR</option>
-<option value="PDC">Post Dated Cheque (PDC)</option>
-</select>
-</div>
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Deposit Amount (₹) <span style="color: red;">*</span></label>
-<input placeholder="Enter amount" required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="number"/>
-</div>
-</div>
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank / Reference Number <span style="color: red;">*</span></label>
-<input placeholder="e.g. BG12345678" required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="text"/>
-</div>
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank Name <span style="color: red;">*</span></label>
-<input placeholder="e.g. State Bank of India" required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="text"/>
-</div>
-</div>
-<div style="margin-bottom: 1rem;">
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Branch Name <span style="color: red;">*</span></label>
-<input placeholder="Enter branch name" required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="text"/>
-</div>
-<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Issue Date <span style="color: red;">*</span></label>
-<input required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="date"/>
-</div>
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Validity Date <span style="color: red;">*</span></label>
-<input required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="date"/>
-</div>
-<div>
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Claim Date <span style="color: red;">*</span></label>
-<input required="" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;" type="date"/>
-</div>
-</div>
-<div style="margin-bottom: 2rem; background: rgba(67, 24, 255, 0.03); padding: 1.5rem; border: 1px dashed var(--primary); border-radius: 8px; text-align: center;">
-<label style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; cursor: pointer;">
-<i class="fa-solid fa-file-pdf text-danger" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br/>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Deposit
+                            Amount (₹) <span style="color: red;">*</span></label>
+                        <input placeholder="Enter amount" required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="number" />
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
+                            / Reference Number <span style="color: red;">*</span></label>
+                        <input placeholder="e.g. BG12345678" required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="text" />
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
+                            Name <span style="color: red;">*</span></label>
+                        <input placeholder="e.g. State Bank of India" required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="text" />
+                    </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Branch
+                        Name <span style="color: red;">*</span></label>
+                    <input placeholder="Enter branch name" required=""
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                        type="text" />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Issue
+                            Date <span style="color: red;">*</span></label>
+                        <input required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="date" />
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Validity
+                            Date <span style="color: red;">*</span></label>
+                        <input required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="date" />
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Claim
+                            Date <span style="color: red;">*</span></label>
+                        <input required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                            type="date" />
+                    </div>
+                </div>
+                <div
+                    style="margin-bottom: 2rem; background: rgba(67, 24, 255, 0.03); padding: 1.5rem; border: 1px dashed var(--primary); border-radius: 8px; text-align: center;">
+                    <label
+                        style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; cursor: pointer;">
+                        <i class="fa-solid fa-file-pdf text-danger"
+                            style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br />
                         Click to Upload Security Document (1st Page)
-                        <input accept=".pdf" onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : ''" required="" style="display: none;" type="file"/>
-</label>
-<div id="fileName" style="font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem; font-weight: 600;"></div>
-<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Only PDF format allowed. Max size: 300KB.</div>
-</div>
-<div style="display: flex; gap: 1rem; justify-content: flex-end;">
-<button class="btn" onclick="document.getElementById('uploadSecurityModal').style.display='none'" style="background: #f1f5f9; color: var(--text-main); border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;" type="button">Cancel</button>
-<button class="btn" style="background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(67, 24, 255, 0.2);" type="submit">Upload &amp; Save</button>
-</div>
-</form>
-</div>
-</div>
+                        <input accept=".pdf"
+                            onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : ''"
+                            required="" style="display: none;" type="file" />
+                    </label>
+                    <div id="fileName"
+                        style="font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem; font-weight: 600;"></div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Only PDF format
+                        allowed. Max size: 300KB.</div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn" onclick="document.getElementById('uploadSecurityModal').style.display='none'"
+                        style="background: #f1f5f9; color: var(--text-main); border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;"
+                        type="button">Cancel</button>
+                    <button class="btn"
+                        style="background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(67, 24, 255, 0.2);"
+                        type="submit">Upload &amp; Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<!-- Support & Feedback UI -->
-<div id="supportBtn" onclick="toggleSupportModal()" onmouseout="this.style.transform='scale(1) translateY(0)'" onmouseover="this.style.transform='scale(1.1) translateY(-5px)'" style="position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(67, 24, 255, 0.4); z-index: 1000; transition: transform 0.3s; animation: pulseSupport 2s infinite;">
-<i class="fa-solid fa-headset"></i>
-</div>
-<div id="supportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
-<div style="background: white; border-radius: 20px; width: 100%; max-width: 450px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.95); animation: popInSupport 0.3s forwards;">
-<div style="background: linear-gradient(135deg, var(--primary), #8b5cf6); padding: 2rem; color: white; position: relative;">
-<button onclick="toggleSupportModal()" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onmouseover="this.style.background='rgba(255,255,255,0.3)'" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s;">×</button>
-<h3 style="margin: 0; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-paper-plane"></i> Help &amp; Feedback</h3>
-<p style="margin: 0; font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Got a suggestion or facing an issue? Let us know!</p>
-</div>
-<div style="padding: 2rem;">
-<div style="margin-bottom: 1.2rem;">
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Select Topic <span style="color:red;">*</span></label>
-<select id="supportType" onblur="this.style.borderColor='#e2e8f0'" onfocus="this.style.borderColor='var(--primary)'" style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; cursor: pointer; outline: none; transition: border-color 0.2s;">
-<option value="Problem">Bug / Problem 🐛</option>
-<option value="Suggestion">Feature Suggestion 💡</option>
-<option value="Query">General Query ❓</option>
-</select>
-</div>
-<div style="margin-bottom: 1.5rem;">
-<label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Your Message <span style="color:red;">*</span></label>
-<textarea id="supportMsg" onblur="this.style.borderColor='#e2e8f0'" onfocus="this.style.borderColor='var(--primary)'" placeholder="Type your message here..." rows="4" style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
-</div>
-<button onclick="submitSupport()" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.3)';" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(37, 211, 102, 0.4)';" style="width: 100%; padding: 1rem; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); transition: all 0.2s;">
+    <!-- Support & Feedback UI -->
+    <div id="supportBtn" onclick="toggleSupportModal()" onmouseout="this.style.transform='scale(1) translateY(0)'"
+        onmouseover="this.style.transform='scale(1.1) translateY(-5px)'"
+        style="position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(67, 24, 255, 0.4); z-index: 1000; transition: transform 0.3s; animation: pulseSupport 2s infinite;">
+        <i class="fa-solid fa-headset"></i>
+    </div>
+    <div id="supportModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; border-radius: 20px; width: 100%; max-width: 450px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.95); animation: popInSupport 0.3s forwards;">
+            <div
+                style="background: linear-gradient(135deg, var(--primary), #8b5cf6); padding: 2rem; color: white; position: relative;">
+                <button onclick="toggleSupportModal()" onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                    onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                    style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s;">×</button>
+                <h3
+                    style="margin: 0; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-paper-plane"></i> Help &amp; Feedback</h3>
+                <p style="margin: 0; font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Got a suggestion or facing an
+                    issue? Let us know!</p>
+            </div>
+            <div style="padding: 2rem;">
+                <div style="margin-bottom: 1.2rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Select
+                        Topic <span style="color:red;">*</span></label>
+                    <select id="supportType" onblur="this.style.borderColor='#e2e8f0'"
+                        onfocus="this.style.borderColor='var(--primary)'"
+                        style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; cursor: pointer; outline: none; transition: border-color 0.2s;">
+                        <option value="Problem">Bug / Problem 🐛</option>
+                        <option value="Suggestion">Feature Suggestion 💡</option>
+                        <option value="Query">General Query ❓</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Your
+                        Message <span style="color:red;">*</span></label>
+                    <textarea id="supportMsg" onblur="this.style.borderColor='#e2e8f0'"
+                        onfocus="this.style.borderColor='var(--primary)'" placeholder="Type your message here..."
+                        rows="4"
+                        style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
+                </div>
+                <button onclick="submitSupport()"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.3)';"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(37, 211, 102, 0.4)';"
+                    style="width: 100%; padding: 1rem; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); transition: all 0.2s;">
                     Send via WhatsApp <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
-</button>
-</div>
-</div>
-</div>
-<!-- Add New Mill Modal -->
-<div id="addMillModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-    <div class="card" style="width: 100%; max-width: 450px; padding: 2rem; border-radius: 16px; position: relative;">
-        <button onclick="document.getElementById('addMillModal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-        
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-            <i class="fa-solid fa-building-circle-check" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
-            <h3 style="color: var(--text-main); font-size: 1.3rem;">Add New Mill Account</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Login with portal credentials to track another mill.</p>
-        </div>
-        
-        <form id="addMillForm" onsubmit="event.preventDefault(); alert('Authentication successful! The new mill has been added. Data will be fetched in the background and appear on your dashboard shortly.'); document.getElementById('addMillModal').style.display='none'; this.reset();">
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Miller ID <span style="color: red;">*</span></label>
-                <input type="text" required placeholder="e.g. MA441234" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                </button>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Portal Password <span style="color: red;">*</span></label>
-                <input type="password" required placeholder="Enter portal password" style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+        </div>
+    </div>
+    <!-- Add New Mill Modal -->
+    <div id="addMillModal" class="modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="card"
+            style="width: 100%; max-width: 450px; padding: 2rem; border-radius: 16px; position: relative;">
+            <button onclick="document.getElementById('addMillModal').style.display='none'"
+                style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-building-circle-check"
+                    style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-main); font-size: 1.3rem;">Add New Mill Account</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Login with portal credentials to track another
+                    mill.</p>
             </div>
-            
-            <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, var(--primary), #868CFF); color: white; border: none; padding: 1rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);">
-                <i class="fa-solid fa-link"></i> Connect Mill
-            </button>
-        </form>
-    </div>
-</div>
 
-<!-- PROFESSIONAL FOOTER -->
-<footer style="background: #0f172a; color: #94a3b8; padding: 3rem 1rem 1rem 1rem; margin-top: 4rem; border-top: 4px solid var(--primary);">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-        <div>
-            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
-                <img src="logo.png" alt="CMRS Logo" style="height: 30px; background: white; padding: 2px; border-radius: 4px;" onerror="this.style.display='none'">
-                <span style="color: white; font-size: 1.2rem; font-weight: 700;">CMRS PRO</span>
+            <form id="addMillForm"
+                onsubmit="event.preventDefault(); alert('Authentication successful! The new mill has been added. Data will be fetched in the background and appear on your dashboard shortly.'); document.getElementById('addMillModal').style.display='none'; this.reset();">
+                <div style="margin-bottom: 1rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Miller
+                        ID <span style="color: red;">*</span></label>
+                    <input type="text" required placeholder="e.g. MA441234"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Portal
+                        Password <span style="color: red;">*</span></label>
+                    <input type="password" required placeholder="Enter portal password"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                </div>
+
+                <button type="submit" class="btn"
+                    style="width: 100%; background: linear-gradient(135deg, var(--primary), #868CFF); color: white; border: none; padding: 1rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);">
+                    <i class="fa-solid fa-link"></i> Connect Mill
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL FOOTER -->
+    <footer
+        style="background: #0f172a; color: #94a3b8; padding: 3rem 1rem 1rem 1rem; margin-top: 4rem; border-top: 4px solid var(--primary);">
+        <div
+            style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem;">
+                    <img src="logo.png" alt="CMRS Logo"
+                        style="height: 30px; background: white; padding: 2px; border-radius: 4px;"
+                        onerror="this.style.display='none'">
+                    <span style="color: white; font-size: 1.2rem; font-weight: 700;">CMRS PRO</span>
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.6;">Automated financial and operational reporting dashboard
+                    designed exclusively for Chhattisgarh Custom Milling rice millers.</p>
             </div>
-            <p style="font-size: 0.85rem; line-height: 1.6;">Automated financial and operational reporting dashboard designed exclusively for Chhattisgarh Custom Milling rice millers.</p>
-        </div>
-        
-        <div>
-            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Legal Pages</h4>
-            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
-                <li><a href="#" onclick="openPolicyModal('privacy')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Privacy Policy</a></li>
-                <li><a href="#" onclick="openPolicyModal('terms')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Terms & Conditions</a></li>
-                <li><a href="#" onclick="openPolicyModal('refund')" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Refund Policy</a></li>
-            </ul>
-        </div>
-        
-        <div>
-            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Contact Us</h4>
-            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
-                <li><i class="fa-solid fa-envelope" style="width: 20px;"></i> support@cmrspro.com</li>
-                <li><i class="fa-solid fa-phone" style="width: 20px;"></i> +91 98765 43210</li>
-                <li><i class="fa-brands fa-whatsapp" style="width: 20px;"></i> WhatsApp Support Available</li>
-            </ul>
-        </div>
-    </div>
-    <div style="max-width: 1200px; margin: 0 auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; font-size: 0.8rem;">
-        &copy; 2026 CMRS PRO. All rights reserved. Not affiliated with Government of Chhattisgarh.
-    </div>
-</footer>
 
-<!-- Policy Modal -->
-<div id="policyModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
-    <div style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-            <h3 id="policyModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700;">Policy Document</h3>
-            <button onclick="document.getElementById('policyModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+            <div>
+                <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Legal Pages</h4>
+                <ul
+                    style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
+                    <li><a href="#" onclick="openPolicyModal('privacy')"
+                            style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;"
+                            onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Privacy
+                            Policy</a></li>
+                    <li><a href="#" onclick="openPolicyModal('terms')"
+                            style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;"
+                            onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Terms &
+                            Conditions</a></li>
+                    <li><a href="#" onclick="openPolicyModal('refund')"
+                            style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: color 0.2s;"
+                            onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Refund
+                            Policy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem;">Contact Us</h4>
+                <ul
+                    style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
+                    <li><i class="fa-solid fa-envelope" style="width: 20px;"></i> support@cmrspro.com</li>
+                    <li><i class="fa-solid fa-phone" style="width: 20px;"></i> +91 98765 43210</li>
+                    <li><i class="fa-brands fa-whatsapp" style="width: 20px;"></i> WhatsApp Support Available</li>
+                </ul>
+            </div>
         </div>
-        <div id="policyModalContent" style="padding: 2rem; overflow-y: auto; flex: 1; font-size: 0.9rem; line-height: 1.6; color: #334155;">
-            <!-- Content injected via JS -->
+        <div
+            style="max-width: 1200px; margin: 0 auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; font-size: 0.8rem;">
+            &copy; 2026 CMRS PRO. All rights reserved. Not affiliated with Government of Chhattisgarh.
         </div>
-        <div style="padding: 1rem 2rem; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
-            <button onclick="document.getElementById('policyModal').style.display='none'" style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">I Understand</button>
+    </footer>
+
+    <!-- Policy Modal -->
+    <div id="policyModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div
+                style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+                <h3 id="policyModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700;">
+                    Policy Document</h3>
+                <button onclick="document.getElementById('policyModal').style.display='none'"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+            <div id="policyModalContent"
+                style="padding: 2rem; overflow-y: auto; flex: 1; font-size: 0.9rem; line-height: 1.6; color: #334155;">
+                <!-- Content injected via JS -->
+            </div>
+            <div style="padding: 1rem 2rem; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
+                <button onclick="document.getElementById('policyModal').style.display='none'"
+                    style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">I
+                    Understand</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="data.js"></script>
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
