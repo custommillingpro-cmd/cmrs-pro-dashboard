@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 import os
 from pydantic import BaseModel
+import requests
+from datetime import datetime, timedelta
+import json
 
 app = FastAPI(title="CMRS PRO API")
 
@@ -36,23 +39,46 @@ class LoginRequest(BaseModel):
 
 @app.post("/api/login")
 def login(req: LoginRequest):
-    # Dummy authentication for now
-    if req.password != "12345":
-        raise HTTPException(status_code=401, detail="Invalid Credentials")
+    miller_id = req.username.upper().strip()
     
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Check if miller exists
-    cursor.execute("SELECT id, name FROM millers WHERE id = %s", (req.username,))
-    miller = cursor.fetchone()
-    
-    conn.close()
-    
-    if not miller:
-        raise HTTPException(status_code=401, detail="Miller ID not found")
+    try:
+        # Check if credentials exist
+        cursor.execute("SELECT portal_password FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+        cred = cursor.fetchone()
         
-    return {"status": "success", "miller": miller}
+        if cred:
+            # Miller exists in credentials, check password
+            if cred['portal_password'] != req.password:
+                raise HTTPException(status_code=401, detail="Invalid Portal Password")
+            
+            # Password correct, check if data is available
+            cursor.execute("SELECT id FROM millers WHERE id = %s", (miller_id,))
+            if not cursor.fetchone():
+                return {"status": "processing", "message": "First time login. Data extraction is still running in background. Please wait 1-2 minutes."}
+            return {"status": "success", "message": "Login successful"}
+            
+        else:
+            # First time logging in ever! We treat this as Add Mill
+            cursor.execute('''
+                INSERT INTO miller_credentials (miller_id, portal_password)
+                VALUES (%s, %s)
+            ''', (miller_id, req.password))
+            conn.commit()
+            
+            # Trigger background worker
+            trigger_github_action(miller_id, req.password, action_type="add-mill")
+            return {"status": "processing", "message": "First time login. Data extraction started in background. Please wait 1-2 minutes and refresh."}
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Database Error")
+    finally:
+        conn.close()
 
 @app.get("/api/dashboard/{miller_id}")
 def get_dashboard_data(miller_id: str):
@@ -83,19 +109,203 @@ def get_dashboard_data(miller_id: str):
     cursor.execute("SELECT * FROM bank_guarantees WHERE miller_id = %s", (miller_id,))
     bgs = cursor.fetchall()
     
+    # Fetch last sync time
+    cursor.execute("SELECT last_sync_time FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+    cred = cursor.fetchone()
+    last_sync = None
+    if cred and cred.get('last_sync_time'):
+        last_sync = str(cred['last_sync_time'])
+    
     conn.close()
+    
+    # Group rice qualities by agreement number
+    rq_dict = {}
+    for rq in rice_qualities:
+        ano = rq.get('agreement_no') or ''
+        atype = rq.get('agreement_type') or ''
+        qtype = rq.get('quality_type') or ''
+        qty = float(rq.get('quantity') or 0.0)
+        
+        if not ano:
+            ano = 'Other'
+            atype = 'Other'
+            
+        if ano not in rq_dict:
+            rq_dict[ano] = {
+                "agreement_no": ano,
+                "agreement_type": atype,
+                "total_pending": 0.0,
+                "qualities": {}
+            }
+            
+        if qtype in rq_dict[ano]["qualities"]:
+            rq_dict[ano]["qualities"][qtype] += qty
+        else:
+            rq_dict[ano]["qualities"][qtype] = qty
+        rq_dict[ano]["total_pending"] += qty
+        
+    formatted_rq = list(rq_dict.values())
+    
+    # Transform to match original data.js format
+    formatted_data = {
+        "miller_id": miller['id'],
+        "name": miller['name'],
+        "miller_name_full": miller['name'],
+        "last_sync_time": last_sync,
+        "metrics": {
+            "riceTarget": miller['target_rice'],
+            "riceDeposited": miller['deposited_rice'],
+            "riceBalance": miller['rice_balance'],
+            "totalAllottedPaddy": miller['total_allotted_paddy'],
+            "balancePaddy": miller['balance_paddy'],
+            "paddyAmt": miller['paddy_amt'],
+            "bgAmount": miller['bg_amount'],
+            "freeBg": miller['free_bg']
+        },
+        
+        "riceQualities": formatted_rq,
+        
+        "gatePassStatus": [
+            {
+                "lotNo": gp['lot_no'],
+                "date": gp['pass_date'],
+                "quantity": gp['quantity'],
+                "status": gp['status'],
+                "agreement": gp['agreement_no'],
+                "cmrCenter": gp['cmr_center'],
+                "commodity": gp['commodity'],
+                "bagYear": gp['bag_year'],
+                "approvalDate": gp['approval_date']
+            } for gp in gatepasses
+        ],
+        "pendingDOs": [
+            {
+                "agreement": do['agreement_no'],
+                "center": do['center'],
+                "date": do['do_date'],
+                "type": do['paddy_type'],
+                "qty": do['quantity']
+            } for do in pending_dos
+        ],
+        "nearestBgs": [
+            {
+                "id": bg['bg_no'],
+                "bank": bg['bank_name'],
+                "amount": bg['amount'],
+                "date": bg['valid_date'],
+                "daysLeft": bg['days_left']
+            } for bg in bgs
+        ]
+    }
     
     return {
         "status": "success",
-        "data": {
-            "miller": miller,
-            "rice_qualities": rice_qualities,
-            "gatepasses": gatepasses,
-            "pending_dos": pending_dos,
-            "bank_guarantees": bgs
-        }
+        "data": formatted_data
     }
     
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+
+# --- PHASE 3 AUTOMATION ENDPOINTS ---
+
+class AddMillRequest(BaseModel):
+    miller_id: str
+    password: str
+
+def trigger_github_action(miller_id: str, password: str, action_type: str = "sync"):
+    """Trigger GitHub Actions workflow via repository_dispatch"""
+    github_token = os.getenv("GITHUB_TOKEN")
+    repo = os.getenv("GITHUB_REPO", "custommillingpro-cmd/cmrs-pro-dashboard")
+    
+    if not github_token:
+        print("Warning: GITHUB_TOKEN not set, skipping real automation trigger.")
+        return False
+        
+    url = f"https://api.github.com/repos/{repo}/dispatches"
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": f"token {github_token}"
+    }
+    payload = {
+        "event_type": f"trigger-{action_type}",
+        "client_payload": {
+            "miller_id": miller_id,
+            "password": password
+        }
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        return response.status_code == 204
+    except Exception as e:
+        print(f"Failed to trigger GitHub Action: {e}")
+        return False
+
+@app.post("/api/add-mill")
+def add_mill(req: AddMillRequest):
+    miller_id = req.miller_id.upper().strip()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Save or update credentials
+        cursor.execute('''
+            INSERT INTO miller_credentials (miller_id, portal_password)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE portal_password = %s
+        ''', (miller_id, req.password, req.password))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Database error")
+    finally:
+        conn.close()
+        
+    # Trigger the background scraper to fetch data for the first time
+    trigger_github_action(miller_id, req.password, action_type="add-mill")
+    
+    return {"status": "success", "message": "Credentials saved. Data extraction started in background."}
+
+class SyncRequest(BaseModel):
+    miller_id: str
+
+@app.post("/api/sync-live")
+def sync_live(req: SyncRequest):
+    miller_id = req.miller_id.upper().strip()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+    cred = cursor.fetchone()
+    
+    if not cred:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Credentials not found. Please re-add mill.")
+        
+    # Check 1-hour cooldown
+    if cred['last_sync_time']:
+        time_diff = datetime.now() - cred['last_sync_time']
+        if time_diff < timedelta(hours=1):
+            conn.close()
+            remaining_mins = int(60 - time_diff.total_seconds() / 60)
+            raise HTTPException(
+                status_code=429, 
+                detail=f"Sync is frozen to prevent server overload. Please try again in {remaining_mins} minutes."
+            )
+            
+    # Update last_sync_time
+    try:
+        cursor.execute("UPDATE miller_credentials SET last_sync_time = NOW() WHERE miller_id = %s", (miller_id,))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+    finally:
+        conn.close()
+        
+    # Trigger background worker
+    trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
+    
+    return {"status": "success", "message": "Live sync started in background. Refresh dashboard in 1-2 minutes."}
