@@ -211,6 +211,15 @@ function toggleSupportModal() {
 
         
         const loadView = (id) => {
+            // Synchronize active tab class
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                if (b.getAttribute('data-id') === id) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+
             const letterSec = document.getElementById('letterGeneratorSection');
             const btnUploadSecurity = document.getElementById('btnUploadSecurity');
             const mainGrid = document.getElementById('mainDashboardContent');
@@ -790,7 +799,7 @@ function toggleSupportModal() {
         }
 
         // Initialize the first view
-        function initializeDashboardView() {
+        function initializeDashboardView(forceActiveId = null) {
             const dashboardData = window.dashboardData || {};
             const rawKeys = Object.keys(dashboardData).filter(k => k !== 'leaderboard' && k !== 'combined');
             const loadedKeys = rawKeys.filter(k => !dashboardData[k].loading);
@@ -799,6 +808,15 @@ function toggleSupportModal() {
                 generateCombinedData();
             } else {
                 delete window.dashboardData['combined'];
+            }
+            
+            // Get currently active tab ID before clearing
+            let activeId = forceActiveId;
+            if (!activeId) {
+                const currentActive = document.querySelector('.tab-btn.active');
+                if (currentActive) {
+                    activeId = currentActive.getAttribute('data-id');
+                }
             }
             
             const tabsContainer = document.getElementById('millerTabs');
@@ -826,28 +844,35 @@ function toggleSupportModal() {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    loadView(e.target.getAttribute('data-id'));
+                    e.currentTarget.classList.add('active');
+                    loadView(e.currentTarget.getAttribute('data-id'));
                 });
             });
 
-            // Activate first tab
-            let firstId;
-            if (keys.length > 1) {
-                firstId = 'combined';
-            } else {
-                firstId = keys[0];
+            // Decide which tab to activate
+            if (!activeId || !keys.includes(activeId)) {
+                if (keys.length > 1) {
+                    activeId = 'combined';
+                } else {
+                    activeId = keys[0];
+                }
             }
             
-            // Set initial active class
-            const initialTab = document.querySelector(`.tab-btn[data-id="${firstId}"]`);
-            if (initialTab) initialTab.classList.add('active');
-
-            if (firstId) loadView(firstId);
+            // Set active class & load the view
+            const activeTab = document.querySelector(`.tab-btn[data-id="${activeId}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            if (activeId) {
+                loadView(activeId);
+            }
             
             // Add 'Upload Security' button to Active Bank Guarantee card
             const bgCard = document.querySelector('.bg-card-container');
             if (bgCard) {
+                const existingBtn = document.getElementById('uploadSecurityBtn');
+                if (existingBtn) existingBtn.remove();
+                
                 const btn = document.createElement('button');
                 btn.id = 'uploadSecurityBtn';
                 btn.className = 'btn';
@@ -990,24 +1015,39 @@ function toggleSupportModal() {
             
             if (loadingOverlay) loadingOverlay.style.display = 'none';
 
-            // Check if at least one user has loaded data
-            const hasData = users.some(u => window.dashboardData && window.dashboardData[u]);
-
-            if (users.length > 0 && hasData) {
-                if (sessionStorage.getItem('payment_skipped')) {
-                    if(loginOverlay) loginOverlay.style.display = 'none';
-                    if(paymentOverlay) paymentOverlay.style.display = 'none';
-                    return true;
-                } else {
-                    if(loginOverlay) loginOverlay.style.display = 'none';
-                    if(paymentOverlay) paymentOverlay.style.display = 'flex';
-                    return false;
-                }
+            if (users.length > 0) {
+                if (loginOverlay) loginOverlay.style.display = 'none';
+                if (paymentOverlay) paymentOverlay.style.display = 'none';
+                return true;
             } else {
-                if(loginOverlay) loginOverlay.style.display = 'flex';
-                if(paymentOverlay) paymentOverlay.style.display = 'none';
+                if (loginOverlay) loginOverlay.style.display = 'flex';
+                if (paymentOverlay) paymentOverlay.style.display = 'none';
                 return false;
             }
+        }
+
+        function startBackgroundPollingForMill(millerId) {
+            if (window.pollingIntervals && window.pollingIntervals[millerId]) {
+                return;
+            }
+            if (!window.pollingIntervals) window.pollingIntervals = {};
+            
+            window.pollingIntervals[millerId] = setInterval(async () => {
+                const success = await fetchDashboardData(millerId);
+                if (success) {
+                    clearInterval(window.pollingIntervals[millerId]);
+                    delete window.pollingIntervals[millerId];
+                    
+                    // Re-render tabs (removes Loading Mill prefix & adds Combined Overview if > 1)
+                    initializeDashboardView();
+                    
+                    // If user is still viewing this mill tab, refresh view to show the actual data
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab && activeTab.getAttribute('data-id') === millerId) {
+                        loadView(millerId);
+                    }
+                }
+            }, 10000);
         }
 
         async function initAuth() {
@@ -1016,34 +1056,44 @@ function toggleSupportModal() {
             
             const users = getCmrsUsers();
             if (users.length > 0) {
-                let anySuccess = false;
+                // Ensure overlays are hidden
+                sessionStorage.setItem('payment_skipped', 'true');
+                checkLoginStatus();
+                
+                // Fetch data for all users
                 for (const u of users) {
                     const success = await fetchDashboardData(u);
-                    if (success) anySuccess = true;
+                    if (!success) {
+                        // Keep a loading placeholder so the tab is shown!
+                        if (!window.dashboardData) window.dashboardData = {};
+                        window.dashboardData[u] = {
+                            loading: true,
+                            miller_id: u,
+                            name: "Loading Mill (" + u + ")",
+                            miller_name_full: "Loading Mill (" + u + ")",
+                            last_sync_time: null,
+                            metrics: {
+                                riceTarget: 0,
+                                riceDeposited: 0,
+                                riceBalance: 0,
+                                totalAllottedPaddy: 0,
+                                balancePaddy: 0,
+                                paddyAmt: 0,
+                                bgAmount: 0,
+                                freeBg: 0
+                            },
+                            riceQualities: [],
+                            gatePassStatus: [],
+                            pendingDOs: [],
+                            nearestBgs: []
+                        };
+                        
+                        // Start polling in background
+                        startBackgroundPollingForMill(u);
+                    }
                 }
                 
-                if (anySuccess) {
-                    if (checkLoginStatus()) {
-                        initializeDashboardView();
-                    }
-                } else {
-                    // If no data is available yet, DO NOT log out. 
-                    // This means they just registered and GitHub Actions is scraping data!
-                    const loadingOverlay = document.getElementById('globalLoadingOverlay');
-                    const title = document.getElementById('loadingOverlayTitle');
-                    const desc = document.getElementById('loadingOverlayDesc');
-                    
-                    if (loadingOverlay && title && desc) {
-                        loadingOverlay.style.display = 'flex';
-                        title.innerText = "Extracting Live Data";
-                        desc.innerText = "Please wait while our bot fetches your data from the Markfed portal... This takes about 1-2 minutes.";
-                        
-                        // Auto-refresh the page every 15 seconds to check if data is ready
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 15000);
-                    }
-                }
+                initializeDashboardView();
             } else {
                 checkLoginStatus();
             }
@@ -1169,34 +1219,11 @@ function toggleSupportModal() {
                         nearestBgs: []
                     };
                     
-                    // Re-render tabs immediately
-                    initializeDashboardView();
-                    
-                    // Activate the new tab button
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    const newTabBtn = document.querySelector(`.tab-btn[data-id="${millerId}"]`);
-                    if (newTabBtn) {
-                        newTabBtn.classList.add('active');
-                    }
-                    
-                    // Load the loading view
-                    loadView(millerId);
+                    // Re-render tabs immediately and activate the new mill tab
+                    initializeDashboardView(millerId);
                     
                     // Start background polling
-                    const pollInterval = setInterval(async () => {
-                        const success = await fetchDashboardData(millerId);
-                        if (success) {
-                            clearInterval(pollInterval);
-                            // Re-render tabs (removes Loading Mill prefix & adds Combined Overview if > 1)
-                            initializeDashboardView();
-                            
-                            // If user is still viewing this mill tab, refresh view to show the actual data
-                            const activeTab = document.querySelector('.tab-btn.active');
-                            if (activeTab && activeTab.getAttribute('data-id') === millerId) {
-                                loadView(millerId);
-                            }
-                        }
-                    }, 10000);
+                    startBackgroundPollingForMill(millerId);
                 } else {
                     alert("Error: " + result.detail);
                 }

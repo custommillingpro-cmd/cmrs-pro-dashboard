@@ -36,9 +36,9 @@
 
     <!-- LOGIN OVERLAY -->
     <div id="loginOverlay"
-        style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: none; align-items: center; justify-content: center; padding: 1rem;">
+        style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, var(--bg-body) 0%, var(--border-light) 100%); display: none; align-items: center; justify-content: center; padding: 1rem;">
         <div
-            style="background: white; width: 100%; max-width: 420px; border-radius: 24px; padding: 2.5rem 2rem; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow: hidden;">
+            style="background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 24px; padding: 2.5rem 2rem; box-shadow: 0 25px 50px -12px rgba(67, 24, 255, 0.15); border: 1px solid var(--border-light); position: relative; overflow: hidden;">
 
             <!-- Decorative bg blur -->
             <div
@@ -52,44 +52,44 @@
                 <img src="logo.png" alt="CMRS Logo"
                     style="height: 60px; margin-bottom: 1rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); border-radius: 8px; background: white; padding: 4px;"
                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQzMThGRiIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiPkM8L3RleHQ+PC9zdmc+';" />
-                <h2 style="margin: 0; color: #0f172a; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">
+                <h2 style="margin: 0; color: var(--text-main); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;">
                     Welcome Back</h2>
-                <p style="margin: 0; color: #64748b; font-size: 0.9rem; margin-top: 0.4rem;">Sign in to CMRS PRO
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem; margin-top: 0.4rem;">Sign in to CMRS PRO
                     Dashboard</p>
             </div>
 
             <form id="loginForm" action="javascript:void(0)" onsubmit="handleLogin(event)" style="position: relative; z-index: 1;">
                 <div style="margin-bottom: 1.2rem;">
                     <label
-                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Miller
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Miller
                         ID (Username)</label>
                     <div style="position: relative;">
                         <i class="fa-solid fa-user"
                             style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
                         <input type="text" id="loginUsername" required placeholder="e.g. MA441234"
-                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;"
+                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid var(--border-light); border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none; background: var(--bg-body); color: var(--text-main);"
                             onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';"
-                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                            onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none';">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 1.2rem;">
                     <label
-                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Portal
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Portal
                         Password</label>
                     <div style="position: relative;">
                         <i class="fa-solid fa-lock"
                             style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
                         <input type="password" id="loginPassword" required placeholder="Enter password"
-                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none;"
+                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.8rem; border: 1.5px solid var(--border-light); border-radius: 12px; font-size: 0.95rem; font-family: inherit; transition: all 0.3s; outline: none; background: var(--bg-body); color: var(--text-main);"
                             onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67,24,255,0.1)';"
-                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                            onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none';">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
                     <label
-                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #475569; font-weight: 500;">
+                        style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
                         <input type="checkbox" id="keepLoggedIn"
                             style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary);">
                         Keep me logged in permanently
@@ -112,29 +112,29 @@
 
     <!-- PAYMENT OVERLAY (DUMMY) -->
     <div id="paymentOverlay"
-        style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); align-items: center; justify-content: center; padding: 1rem;">
+        style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, var(--bg-body) 0%, var(--border-light) 100%); align-items: center; justify-content: center; padding: 1rem;">
         <div
-            style="background: white; width: 100%; max-width: 480px; border-radius: 24px; padding: 3rem 2rem; box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.15); border: 1px solid rgba(255,255,255,0.8); position: relative; text-align: center;">
+            style="background: var(--bg-card); width: 100%; max-width: 480px; border-radius: 24px; padding: 3rem 2rem; box-shadow: 0 25px 50px -12px rgba(22, 163, 74, 0.15); border: 1px solid var(--border-light); position: relative; text-align: center;">
 
             <div
                 style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem auto;">
                 <i class="fa-solid fa-indian-rupee-sign"></i>
             </div>
 
-            <h2 style="margin: 0; color: #166534; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Premium
+            <h2 style="margin: 0; color: #22c55e; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Premium
                 Subscription</h2>
-            <p style="color: #475569; font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">You are currently
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">You are currently
                 enjoying the trial phase of CMRS PRO. To unlock permanent access and live WhatsApp alerts, please
                 complete your payment.</p>
 
             <div
-                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                style="background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="font-weight: 600; color: #475569;">Subscription Plan:</span>
-                    <span style="font-weight: 700; color: #0f172a;">Yearly Access</span>
+                    <span style="font-weight: 600; color: var(--text-muted);">Subscription Plan:</span>
+                    <span style="font-weight: 700; color: var(--text-main);">Yearly Access</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 600; color: #475569;">Amount:</span>
+                    <span style="font-weight: 600; color: var(--text-muted);">Amount:</span>
                     <span style="font-weight: 800; color: #22c55e; font-size: 1.2rem;">₹ 0000</span>
                 </div>
             </div>
@@ -147,8 +147,8 @@
             </button>
 
             <button onclick="skipPayment()"
-                style="background: none; border: none; color: #94a3b8; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.2s;"
-                onmouseover="this.style.color='#64748b';" onmouseout="this.style.color='#94a3b8';">
+                style="background: none; border: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--text-main)';" onmouseout="this.style.color='var(--text-muted)';">
                 Skip for now (Trial Phase)
             </button>
         </div>
@@ -183,7 +183,7 @@
                 <!-- Tabs will be dynamically generated by JS -->
             </div>
             <button onclick="document.getElementById('addMillModal').style.display='flex'" class="btn"
-                style="background: var(--warning); color: var(--text-main); font-weight: 700; border: none; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; margin-left: 1rem; box-shadow: 0 4px 10px rgba(255, 206, 32, 0.3);"><i
+                style="background: var(--warning); color: #0f172a; font-weight: 700; border: none; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer; margin-left: 1rem; box-shadow: 0 4px 10px rgba(255, 206, 32, 0.3);"><i
                     class="fa-solid fa-plus"></i> Add New Mill</button>
         </div>
     </nav>
@@ -263,7 +263,7 @@
                         style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch; margin-top: 1.5rem;">
                         <!-- TOTAL PENDING (Main block with button) -->
                         <div
-                            style="flex: 1 1 300px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.05)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(15, 23, 42, 0.1); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem;">
+                            style="flex: 1 1 300px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-total-pending); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-total-pending); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 1rem;">
                             <div>
                                 <div data-i18n="Total Pending"
                                     style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
@@ -281,7 +281,7 @@
                             <button onclick="document.getElementById('riceModal').style.display='flex'"
                                 onmouseout="this.style.transform='translateY(0)'"
                                 onmouseover="this.style.transform='translateY(-2px)'"
-                                style="background: var(--text-main); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(15, 23, 42, 0.2); transition: all 0.2s; white-space: nowrap; margin-top: 0.5rem;"
+                                style="background: var(--primary); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(67, 24, 255, 0.2); transition: all 0.2s; white-space: nowrap; margin-top: 0.5rem;"
                                 title="View Detailed Quality Breakdown"><i class="fa-solid fa-layer-group"></i>
                                 Details</button>
                         </div>
@@ -455,7 +455,7 @@
                         </div>
                     </div>
                     <!-- Free BG Card -->
-                    <div class="card kpi-card kpi-free" style="background: linear-gradient(180deg, #ffffff, #fff5f5);">
+                    <div class="card kpi-card kpi-free" style="background: var(--bg-free-kpi);">
                         <div class="flex-resp"
                             style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div>
@@ -723,121 +723,115 @@ Authorized Signatory</textarea>
                                 style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border-light); width: 250px;">
                                 जमा प्रतिशत (%)</th>
                         </tr>
-                    </thead>
-                    <tbody id="leaderboardTableBody">
-                        <!-- Filled by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <!-- END LEADERBOARD SECTION -->
-
-
     <!-- Upload Security Modal -->
     <div class="modal" id="uploadSecurityModal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-        <div class="card"
-            style="width: 100%; max-width: 600px; padding: 2rem; border-radius: 16px; position: relative; max-height: 90vh; overflow-y: auto;">
-            <button onclick="document.getElementById('uploadSecurityModal').style.display='none'"
-                style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
-            <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem;"><i
-                    class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload New Security (BG/FDR/PDC)</h3>
-            <form id="uploadSecurityForm"
+        <div class="modal-card" style="max-width: 600px; max-height: 90vh;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload New Security (BG/FDR/PDC)</h3>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">Submit bank guarantee, FDR, or PDC documents.</p>
+                </div>
+                <button class="modal-close-btn" onclick="document.getElementById('uploadSecurityModal').style.display='none'">×</button>
+            </div>
+            <form id="uploadSecurityForm" style="display: flex; flex-direction: column; overflow: hidden; margin: 0;"
                 onsubmit="event.preventDefault(); alert('Security details submitted successfully for review!'); document.getElementById('uploadSecurityModal').style.display='none'; this.reset(); document.getElementById('fileName').innerText='';">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Security
-                            Type <span style="color: red;">*</span></label>
-                        <select required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
-                            <option value="">Select Type</option>
-                            <option value="BG">Bank Guarantee (BG)</option>
-                            <option value="FDR">FDR</option>
-                            <option value="PDC">Post Dated Cheque (PDC)</option>
-                        </select>
+                <div class="modal-body" style="padding: 2rem; overflow-y: auto;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Security
+                                Type <span style="color: red;">*</span></label>
+                            <select required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);">
+                                <option value="">Select Type</option>
+                                <option value="BG">Bank Guarantee (BG)</option>
+                                <option value="FDR">FDR</option>
+                                <option value="PDC">Post Dated Cheque (PDC)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Deposit
+                                Amount (₹) <span style="color: red;">*</span></label>
+                            <input placeholder="Enter amount" required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="number" />
+                        </div>
                     </div>
-                    <div>
-                        <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Deposit
-                            Amount (₹) <span style="color: red;">*</span></label>
-                        <input placeholder="Enter amount" required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                            type="number" />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
+                                / Reference Number <span style="color: red;">*</span></label>
+                            <input placeholder="e.g. BG12345678" required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="text" />
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
+                                Name <span style="color: red;">*</span></label>
+                            <input placeholder="e.g. State Bank of India" required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="text" />
+                        </div>
                     </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
+                    <div style="margin-bottom: 1rem;">
                         <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
-                            / Reference Number <span style="color: red;">*</span></label>
-                        <input placeholder="e.g. BG12345678" required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                            type="text" />
-                    </div>
-                    <div>
-                        <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Bank
+                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Branch
                             Name <span style="color: red;">*</span></label>
-                        <input placeholder="e.g. State Bank of India" required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+                        <input placeholder="Enter branch name" required=""
+                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
                             type="text" />
                     </div>
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label
-                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Branch
-                        Name <span style="color: red;">*</span></label>
-                    <input placeholder="Enter branch name" required=""
-                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                        type="text" />
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div>
-                        <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Issue
-                            Date <span style="color: red;">*</span></label>
-                        <input required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                            type="date" />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Issue
+                                Date <span style="color: red;">*</span></label>
+                            <input required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="date" />
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Validity
+                                Date <span style="color: red;">*</span></label>
+                            <input required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="date" />
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Claim
+                                Date <span style="color: red;">*</span></label>
+                            <input required=""
+                                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem; background: var(--bg-body); color: var(--text-main);"
+                                type="date" />
+                        </div>
                     </div>
-                    <div>
+                    <div
+                        style="margin-bottom: 0.5rem; background: rgba(67, 24, 255, 0.03); padding: 1.5rem; border: 1px dashed var(--primary); border-radius: 8px; text-align: center;">
                         <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Validity
-                            Date <span style="color: red;">*</span></label>
-                        <input required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                            type="date" />
-                    </div>
-                    <div>
-                        <label
-                            style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Claim
-                            Date <span style="color: red;">*</span></label>
-                        <input required=""
-                            style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
-                            type="date" />
+                            style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; cursor: pointer;">
+                            <i class="fa-solid fa-file-pdf text-danger"
+                                style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br />
+                            Click to Upload Security Document (1st Page)
+                            <input accept=".pdf"
+                                onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : ''"
+                                required="" style="display: none;" type="file" />
+                        </label>
+                        <div id="fileName"
+                            style="font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem; font-weight: 600;"></div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Only PDF format
+                            allowed. Max size: 300KB.</div>
                     </div>
                 </div>
-                <div
-                    style="margin-bottom: 2rem; background: rgba(67, 24, 255, 0.03); padding: 1.5rem; border: 1px dashed var(--primary); border-radius: 8px; text-align: center;">
-                    <label
-                        style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; cursor: pointer;">
-                        <i class="fa-solid fa-file-pdf text-danger"
-                            style="font-size: 2rem; margin-bottom: 0.5rem;"></i><br />
-                        Click to Upload Security Document (1st Page)
-                        <input accept=".pdf"
-                            onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : ''"
-                            required="" style="display: none;" type="file" />
-                    </label>
-                    <div id="fileName"
-                        style="font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem; font-weight: 600;"></div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Only PDF format
-                        allowed. Max size: 300KB.</div>
-                </div>
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <div class="modal-footer" style="padding: 1rem 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
                     <button class="btn" onclick="document.getElementById('uploadSecurityModal').style.display='none'"
-                        style="background: #f1f5f9; color: var(--text-main); border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;"
+                        style="background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-light); padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;"
                         type="button">Cancel</button>
                     <button class="btn"
                         style="background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(67, 24, 255, 0.2);"
@@ -902,8 +896,8 @@ Authorized Signatory</textarea>
     <!-- Add New Mill Modal -->
     <div id="addMillModal" class="modal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-        <div class="card"
-            style="width: 100%; max-width: 450px; padding: 2rem; border-radius: 16px; position: relative;">
+        <div class="modal-card"
+            style="width: 100%; max-width: 450px; position: relative; padding: 2rem;">
             <button onclick="document.getElementById('addMillModal').style.display='none'"
                 style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
 
