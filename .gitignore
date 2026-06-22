@@ -1,0 +1,30 @@
+# Python virtual environments
+env/
+venv/
+ENV/
+.env
+
+# Cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local data and scraped outputs (DO NOT push these to GitHub to keep data private and separate)
+data/
+data.js
+raipur_leaderboard.json
+inserts.sql
+Combined_Dashboard.html
+
+# Zip files / Backups
+*.zip
+*.rar
+*.tar.gz
+
+# IDE/OS specific files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
