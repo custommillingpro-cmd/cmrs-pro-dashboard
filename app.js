@@ -238,6 +238,18 @@ function toggleSupportModal() {
             document.getElementById('viewTitle').innerText = id === 'combined' ? 'Combined Overview' : mData.name;
             document.getElementById('viewSubtitle').innerText = id === 'combined' ? 'Aggregated operational and financial metrics' : 'Individual miller performance metrics';
             
+            // Show last sync time
+            const syncTimeEl = document.getElementById('lastSyncTime');
+            if (syncTimeEl) {
+                if (mData.last_sync_time) {
+                    syncTimeEl.innerHTML = `<i class="fa-solid fa-clock"></i> Last Updated: ${mData.last_sync_time}`;
+                } else if (id === 'combined') {
+                    syncTimeEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> Combined data from all mills`;
+                } else {
+                    syncTimeEl.innerHTML = `<i class="fa-solid fa-database"></i> Data loaded from server`;
+                }
+            }
+            
             if (id === 'combined') {
                 if (letterSec) letterSec.style.display = 'none';
                 if (btnUploadSecurity) btnUploadSecurity.style.display = 'none';
@@ -679,6 +691,7 @@ function toggleSupportModal() {
             
             let combined = {
                 name: "Combined Operations Overview",
+                miller_name_full: "Combined Operations Overview",
                 targetRice: 0,
                 depositedRice: 0,
                 riceBalance: 0,
@@ -693,7 +706,8 @@ function toggleSupportModal() {
                 nearestBgs: []
             };
 
-            let qualityMap = {};
+            // Group qualities by agreement_type (FCI/NAN) across all mills
+            let qualGroups = {};
 
             keys.forEach(k => {
                 const md = dashboardData[k];
@@ -711,22 +725,33 @@ function toggleSupportModal() {
                 if (md.gatePassStatus) combined.gatePassStatus = combined.gatePassStatus.concat(md.gatePassStatus);
                 if (md.nearestBgs) combined.nearestBgs = combined.nearestBgs.concat(md.nearestBgs);
                 
-                // Merge qualities
+                // Merge qualities properly (preserve agreement_type grouping)
                 if (md.riceQualities) {
                     md.riceQualities.forEach(rq => {
+                        const agrType = rq.agreement_type || 'Other';
+                        if (!qualGroups[agrType]) {
+                            qualGroups[agrType] = {
+                                agreement_type: agrType,
+                                agreement_no: 'Combined',
+                                total_pending: 0,
+                                qualities: {}
+                            };
+                        }
+                        qualGroups[agrType].total_pending += (rq.total_pending || 0);
                         if (rq.qualities) {
                             Object.entries(rq.qualities).forEach(([qName, qQty]) => {
-                                if (!qualityMap[qName]) qualityMap[qName] = 0;
-                                qualityMap[qName] += qQty;
+                                if (qualGroups[agrType].qualities[qName]) {
+                                    qualGroups[agrType].qualities[qName] += qQty;
+                                } else {
+                                    qualGroups[agrType].qualities[qName] = qQty;
+                                }
                             });
                         }
                     });
                 }
             });
 
-            if (Object.keys(qualityMap).length > 0) {
-                combined.riceQualities = [{ qualities: qualityMap }];
-            }
+            combined.riceQualities = Object.values(qualGroups);
             
             // Sort merged arrays
             combined.nearestBgs.sort((a, b) => (a.daysLeft || Infinity) - (b.daysLeft || Infinity));
@@ -886,6 +911,7 @@ function toggleSupportModal() {
                 const flat = {
                     name: raw.name || raw.miller_name_full || millerId,
                     miller_name_full: raw.miller_name_full || raw.name || millerId,
+                    last_sync_time: raw.last_sync_time || null,
                     targetRice: m.riceTarget || 0,
                     depositedRice: m.riceDeposited || 0,
                     riceBalance: m.riceBalance || 0,
@@ -899,35 +925,7 @@ function toggleSupportModal() {
                     nearestBgs: raw.nearestBgs || []
                 };
 
-                // Transform riceQualities from [{qualities: {type: qty}}]
-                // into [{agreement_type, agreement_no, total_pending, qualities}]
-                const rawQ = raw.riceQualities || [];
-                let qualGroups = {};
-                rawQ.forEach(rq => {
-                    if (rq.qualities) {
-                        Object.entries(rq.qualities).forEach(([qName, qty]) => {
-                            // Group by pool category (Central Pool, State Pool, etc.)
-                            let agrType = 'Agreement';
-                            let agrNo = millerId;
-                            if (qName.includes('Central Pool')) agrType = 'Central Pool';
-                            else if (qName.includes('State Pool')) agrType = 'State Pool';
-                            else if (qName.includes('FCI')) agrType = 'FCI';
-                            
-                            const key = agrType;
-                            if (!qualGroups[key]) {
-                                qualGroups[key] = {
-                                    agreement_type: agrType,
-                                    agreement_no: millerId,
-                                    total_pending: 0,
-                                    qualities: {}
-                                };
-                            }
-                            qualGroups[key].qualities[qName] = qty;
-                            qualGroups[key].total_pending += qty;
-                        });
-                    }
-                });
-                flat.riceQualities = Object.values(qualGroups);
+                flat.riceQualities = raw.riceQualities || [];
 
                 if (!window.dashboardData) window.dashboardData = {};
                 window.dashboardData[millerId] = flat;
