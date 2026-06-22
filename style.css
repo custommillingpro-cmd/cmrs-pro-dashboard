@@ -1,4 +1,4 @@
-:root {
+ :root {
             --bg-body: #f3f6fc;
             --bg-card: #ffffff;
             --text-main: #111827;
@@ -10,6 +10,27 @@
             --success: #10b981; /* Emerald */
             --danger: #ef4444; /* Red */
             --warning: #f59e0b; /* Amber */
+            
+            /* Custom card variables - Light Mode */
+            --bg-fci: #fffbeb;
+            --border-fci: #fde68a;
+            --text-fci-title: #b45309;
+            --text-fci-val: #d97706;
+            
+            --bg-nan: #eff6ff;
+            --border-nan: #bfdbfe;
+            --text-nan-title: #1d4ed8;
+            --text-nan-val: #2563eb;
+            
+            --bg-do: #f8fafc;
+            --border-do: #e2e8f0;
+            --text-do-title: #64748b;
+            --text-do-val: #111827;
+            
+            --bg-lifted: #fff1f2;
+            --border-lifted: #fecdd3;
+            --text-lifted-title: #be123c;
+            --text-lifted-val: #e11d48;
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -424,6 +445,27 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-light: #334155;
+            
+            /* Custom card variables - Dark Mode */
+            --bg-fci: rgba(217, 119, 6, 0.15);
+            --border-fci: rgba(217, 119, 6, 0.4);
+            --text-fci-title: #fbbf24;
+            --text-fci-val: #f59e0b;
+            
+            --bg-nan: rgba(37, 99, 235, 0.15);
+            --border-nan: rgba(37, 99, 235, 0.4);
+            --text-nan-title: #60a5fa;
+            --text-nan-val: #3b82f6;
+            
+            --bg-do: rgba(148, 163, 184, 0.08);
+            --border-do: rgba(148, 163, 184, 0.3);
+            --text-do-title: #94a3b8;
+            --text-do-val: #f8fafc;
+            
+            --bg-lifted: rgba(225, 29, 72, 0.15);
+            --border-lifted: rgba(225, 29, 72, 0.4);
+            --text-lifted-title: #fda4af;
+            --text-lifted-val: #f43f5e;
         }
         
         body.dark-mode .card, body.dark-mode .math-box, body.dark-mode .bag-box, body.dark-mode .alert-item {
@@ -553,4 +595,133 @@
     0% { transform: scale(0.95); opacity: 0.8; }
     50% { transform: scale(1.05); opacity: 1; }
     100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Modal UI Classes - Supports Light & Dark Theme */
+.modal-card {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modal-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.modal-close-btn {
+    background: var(--bg-body);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: var(--border-light);
+    color: var(--text-main);
+}
+
+.modal-body {
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+    flex: 1;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+}
+
+.modal-table-container {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.modal-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.modal-table-container thead {
+    background-color: var(--bg-body);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.modal-table-container th {
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.modal-table-container td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-main);
+}
+
+.modal-footer {
+    padding: 1.2rem 2rem;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-light);
+    text-align: right;
+}
+
+/* Form inputs & controls in dark mode */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="date"],
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: var(--bg-body) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-light) !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: var(--text-muted) !important;
 }

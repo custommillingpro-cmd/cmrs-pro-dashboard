@@ -231,6 +231,32 @@ function toggleSupportModal() {
             
             const mData = window.dashboardData[id];
             
+            const loadStateEl = document.getElementById('dashboardLoadingState');
+            const normStateEl = document.getElementById('dashboardNormalState');
+            
+            if (!mData || mData.loading) {
+                if (loadStateEl) loadStateEl.style.display = 'block';
+                if (normStateEl) normStateEl.style.display = 'none';
+                
+                // Remove skeletons
+                document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+                
+                document.getElementById('viewTitle').innerText = `Loading Mill Data (${id})`;
+                document.getElementById('viewSubtitle').innerText = 'Bot is running in the background...';
+                
+                const syncTimeEl = document.getElementById('lastSyncTime');
+                if (syncTimeEl) {
+                    syncTimeEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Real-time Sync Active`;
+                }
+                
+                if (letterSec) letterSec.style.display = 'none';
+                if (btnUploadSecurity) btnUploadSecurity.style.display = 'none';
+                return;
+            } else {
+                if (loadStateEl) loadStateEl.style.display = 'none';
+                if (normStateEl) normStateEl.style.display = 'grid';
+            }
+            
             // Remove skeletons
             document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
             
@@ -333,17 +359,17 @@ function toggleSupportModal() {
                 mData.nearestBgs.forEach(bg => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
-                            <div style="font-weight: 600; color: #0f172a;">${bg.id || 'N/A'}</div>
-                            ${bg.bank ? `<div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;"><i class="fa-solid fa-building-columns"></i> ${bg.bank}</div>` : ''}
+                        <td style="padding: 1rem; border-bottom: 1px solid var(--border-light);">
+                            <div style="font-weight: 600; color: var(--text-main);">${bg.id || 'N/A'}</div>
+                            ${bg.bank ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-solid fa-building-columns"></i> ${bg.bank}</div>` : ''}
                         </td>
-                        <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 500; color: #475569;">${bg.date}</td>
-                        <td style="padding: 1rem; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: var(--text-main);">${formatCurrency(bg.amount)}</td>
+                        <td style="padding: 1rem; border-bottom: 1px solid var(--border-light); font-weight: 500; color: var(--text-muted);">${bg.date}</td>
+                        <td style="padding: 1rem; border-bottom: 1px solid var(--border-light); text-align: right; font-weight: 700; color: var(--text-main);">${formatCurrency(bg.amount)}</td>
                     `;
                     allBgsBody.appendChild(tr);
                 });
             } else {
-                allBgsBody.innerHTML = `<tr><td colspan="3" style="padding: 2rem; text-align: center; color: #64748b;">No Bank Guarantees found.</td></tr>`;
+                allBgsBody.innerHTML = `<tr><td colspan="3" style="padding: 2rem; text-align: center; color: var(--text-muted);">No Bank Guarantees found.</td></tr>`;
             }
             
             // Render Pending DOs
@@ -405,40 +431,40 @@ function toggleSupportModal() {
                     agreementGroups[agr].forEach(pdo => {
                         subTotal += pdo.qty;
                         let typeColor = pdo.type.includes('Mota') ? '#3b82f6' : (pdo.type.includes('Sarna') ? '#8b5cf6' : '#10b981');
-                        let typeBg = pdo.type.includes('Mota') ? '#eff6ff' : (pdo.type.includes('Sarna') ? '#f5f3ff' : '#ecfdf5');
+                        let typeBg = pdo.type.includes('Mota') ? 'rgba(59, 130, 246, 0.15)' : (pdo.type.includes('Sarna') ? 'rgba(139, 92, 246, 0.15)' : 'rgba(16, 185, 129, 0.15)');
                         
-                        doBody.innerHTML += `<tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                            <td style="padding: 1.2rem 1.2rem; border-right: 1px dashed #e2e8f0; padding-left: 2rem;">
-                                <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.4rem; font-size: 0.95rem;">${pdo.center}</div>
-                                <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;"><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${pdo.date}</div>
+                        doBody.innerHTML += `<tr style="border-bottom: 1px solid var(--border-light); transition: background 0.2s;" onmouseover="this.style.background='var(--bg-body)'" onmouseout="this.style.background='transparent'">
+                            <td style="padding: 1.2rem 1.2rem; border-right: 1px dashed var(--border-light); padding-left: 2rem;">
+                                <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem; font-size: 0.95rem;">${pdo.center}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;"><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${pdo.date}</div>
                             </td>
                             <td style="padding: 1.2rem 1rem; text-align: center;">
                                 <span style="font-size: 0.8rem; font-weight: 700; color: ${typeColor}; background: ${typeBg}; padding: 0.35rem 0.8rem; border-radius: 6px; border: 1px solid ${typeColor}30;">${pdo.type}</span>
                             </td>
-                            <td style="padding: 1.2rem 1rem; text-align: right; font-weight: 800; color: #0f172a; font-size: 1.15rem;">
-                                ${formatNumber(pdo.qty)} <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Qtls</span>
+                            <td style="padding: 1.2rem 1rem; text-align: right; font-weight: 800; color: var(--text-main); font-size: 1.15rem;">
+                                ${formatNumber(pdo.qty)} <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Qtls</span>
                             </td>
                         </tr>`;
                     });
                     
                     // Subtotal Row for this Agreement
-                    doBody.innerHTML += `<tr style="background: rgba(241, 245, 249, 0.5); border-bottom: 2px solid #e2e8f0;">
-                        <td colspan="2" style="padding: 1rem 1.2rem; font-weight: 700; color: #475569; text-align: right; font-size: 0.95rem;">Agreement Total:</td>
-                        <td style="padding: 1rem 1rem; font-weight: 800; color: #334155; text-align: right; font-size: 1.15rem;">
-                            ${formatNumber(subTotal)} <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Qtls</span>
+                    doBody.innerHTML += `<tr style="background: var(--bg-body); border-bottom: 2px solid var(--border-light);">
+                        <td colspan="2" style="padding: 1rem 1.2rem; font-weight: 700; color: var(--text-muted); text-align: right; font-size: 0.95rem;">Agreement Total:</td>
+                        <td style="padding: 1rem 1rem; font-weight: 800; color: var(--text-main); text-align: right; font-size: 1.15rem;">
+                            ${formatNumber(subTotal)} <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Qtls</span>
                         </td>
                     </tr>`;
                 });
                 
                 // Grand Total Row
                 doBody.innerHTML += `<tr style="background: rgba(16, 185, 129, 0.08); border-top: 3px solid var(--success);">
-                    <td colspan="2" style="padding: 1.5rem 1rem; font-weight: 800; color: #0f172a; text-align: right; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total:</td>
+                    <td colspan="2" style="padding: 1.5rem 1rem; font-weight: 800; color: var(--text-main); text-align: right; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.5px;">Grand Total:</td>
                     <td style="padding: 1.5rem 1rem; font-weight: 800; color: var(--success); text-align: right; font-size: 1.4rem;">
-                        ${formatNumber(doTotal)} <span style="font-size: 1rem; color: #64748b; font-weight: 600;">Qtls</span>
+                        ${formatNumber(doTotal)} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">Qtls</span>
                     </td>
                 </tr>`;
             } else {
-                doBody.innerHTML = `<tr><td colspan="3" style="padding: 3rem 1rem; text-align: center; color: #94a3b8; font-weight: 500;"><i class="fa-solid fa-check-circle" style="font-size: 2.5rem; color: var(--success); opacity: 0.3; margin-bottom: 0.8rem; display: block;"></i>No pending Delivery Orders at the moment.<br>All issued DOs have been fully lifted.</td></tr>`;
+                doBody.innerHTML = `<tr><td colspan="3" style="padding: 3rem 1rem; text-align: center; color: var(--text-muted); font-weight: 500;"><i class="fa-solid fa-check-circle" style="font-size: 2.5rem; color: var(--success); opacity: 0.3; margin-bottom: 0.8rem; display: block;"></i>No pending Delivery Orders at the moment.<br>All issued DOs have been fully lifted.</td></tr>`;
             }
 
             // Render Gate Pass Table
@@ -456,7 +482,7 @@ function toggleSupportModal() {
                 
                 if (pendingLots.length > 0) {
                     gpTableBody.innerHTML = pendingLots.map(gp => `
-                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <tr style="border-bottom: 1px solid var(--border-light);">
                             <td style="padding: 0.8rem; font-weight: 500;">${gp.date}</td>
                             <td style="padding: 0.8rem; font-weight: 600; color: var(--text-muted);">${gp.agreement || '-'}</td>
                             <td style="padding: 0.8rem; font-weight: 600; color: var(--text-main);">${gp.lotNo}</td>
@@ -665,7 +691,7 @@ function toggleSupportModal() {
             tbody.innerHTML = lots.map((gp, i) => {
                 const isApp = gp.status === "Approved";
                 return `
-                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <tr style="border-bottom: 1px solid var(--border-light);">
                         <td style="padding: 1rem 0.8rem; font-weight: 500;">${i+1}</td>
                         <td style="padding: 1rem 0.8rem; font-weight: 500;">${gp.date}</td>
                         <td style="padding: 1rem 0.8rem; font-weight: 500;">${gp.approvalDate || '-'}</td>
@@ -686,8 +712,12 @@ function toggleSupportModal() {
 
         function generateCombinedData() {
             const dashboardData = window.dashboardData || {};
-            const keys = Object.keys(dashboardData).filter(k => k !== 'combined' && k !== 'leaderboard');
-            if (keys.length <= 1) return;
+            const keys = Object.keys(dashboardData).filter(k => k !== 'combined' && k !== 'leaderboard' && !dashboardData[k].loading);
+            if (keys.length <= 1) {
+                // If there are not enough loaded mills, delete any stale combined data
+                delete window.dashboardData['combined'];
+                return;
+            }
             
             let combined = {
                 name: "Combined Operations Overview",
@@ -763,12 +793,17 @@ function toggleSupportModal() {
         function initializeDashboardView() {
             const dashboardData = window.dashboardData || {};
             const rawKeys = Object.keys(dashboardData).filter(k => k !== 'leaderboard' && k !== 'combined');
+            const loadedKeys = rawKeys.filter(k => !dashboardData[k].loading);
             
-            if (rawKeys.length > 1) {
+            if (loadedKeys.length > 1) {
                 generateCombinedData();
+            } else {
+                delete window.dashboardData['combined'];
             }
             
             const tabsContainer = document.getElementById('millerTabs');
+            if (tabsContainer) tabsContainer.innerHTML = ''; // Clear tabs to prevent duplication
+            
             const keys = Object.keys(window.dashboardData).filter(k => k !== 'leaderboard');
             
             // Generate Tabs
@@ -782,7 +817,7 @@ function toggleSupportModal() {
             keys.forEach(k => {
                 if (k !== 'combined') {
                     // Make sure name exists, use ID as fallback
-                    const millerName = dashboardData[k].miller_name_full || k;
+                    const millerName = dashboardData[k].loading ? `Loading Mill (${k})` : (dashboardData[k].miller_name_full || k);
                     tabsContainer.innerHTML += `<button class="tab-btn" data-id="${k}">${millerName}</button>`;
                 }
             });
@@ -1095,7 +1130,6 @@ function toggleSupportModal() {
                 const result = await response.json();
                 
                 if (response.ok) {
-                    alert(result.message + "\n\nPlease wait 1-2 minutes and refresh the page.");
                     document.getElementById('addMillModal').style.display = 'none';
                     event.target.reset();
                     
@@ -1110,6 +1144,59 @@ function toggleSupportModal() {
                             localStorage.setItem('cmrs_user', JSON.stringify(users));
                         }
                     }
+                    
+                    // Create dummy loading structure
+                    if (!window.dashboardData) window.dashboardData = {};
+                    window.dashboardData[millerId] = {
+                        loading: true,
+                        miller_id: millerId,
+                        name: "M/S. Loading Miller (" + millerId + ")",
+                        miller_name_full: "M/S. Loading Miller (" + millerId + ")",
+                        last_sync_time: null,
+                        metrics: {
+                            riceTarget: 0,
+                            riceDeposited: 0,
+                            riceBalance: 0,
+                            totalAllottedPaddy: 0,
+                            balancePaddy: 0,
+                            paddyAmt: 0,
+                            bgAmount: 0,
+                            freeBg: 0
+                        },
+                        riceQualities: [],
+                        gatePassStatus: [],
+                        pendingDOs: [],
+                        nearestBgs: []
+                    };
+                    
+                    // Re-render tabs immediately
+                    initializeDashboardView();
+                    
+                    // Activate the new tab button
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    const newTabBtn = document.querySelector(`.tab-btn[data-id="${millerId}"]`);
+                    if (newTabBtn) {
+                        newTabBtn.classList.add('active');
+                    }
+                    
+                    // Load the loading view
+                    loadView(millerId);
+                    
+                    // Start background polling
+                    const pollInterval = setInterval(async () => {
+                        const success = await fetchDashboardData(millerId);
+                        if (success) {
+                            clearInterval(pollInterval);
+                            // Re-render tabs (removes Loading Mill prefix & adds Combined Overview if > 1)
+                            initializeDashboardView();
+                            
+                            // If user is still viewing this mill tab, refresh view to show the actual data
+                            const activeTab = document.querySelector('.tab-btn.active');
+                            if (activeTab && activeTab.getAttribute('data-id') === millerId) {
+                                loadView(millerId);
+                            }
+                        }
+                    }, 10000);
                 } else {
                     alert("Error: " + result.detail);
                 }

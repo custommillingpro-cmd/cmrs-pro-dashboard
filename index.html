@@ -207,7 +207,26 @@
             </div>
         </div>
         <div id="mainDashboardContent">
-            <div class="dashboard-grid">
+            <!-- Loading State Panel -->
+            <div id="dashboardLoadingState" style="display: none; width: 100%;">
+                <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.4); box-shadow: var(--shadow-lg); margin: 2rem auto; max-width: 650px; animation: fadeIn 0.4s ease-out;">
+                    <div style="position: relative; width: 80px; height: 80px; margin-bottom: 2rem;">
+                        <div style="position: absolute; width: 100%; height: 100%; border: 4px solid rgba(79, 70, 229, 0.1); border-radius: 50%;"></div>
+                        <div style="position: absolute; width: 100%; height: 100%; border: 4px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); padding: 0.5rem 1.2rem; border-radius: 50px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; animation: pulse 2s infinite;">
+                        <span style="width: 8px; height: 8px; background: var(--warning); border-radius: 50%;"></span> Connecting with Markfed...
+                    </div>
+                    <h2 style="font-size: 1.6rem; color: var(--text-main); margin-bottom: 0.75rem; font-weight: 700;">Fetching Mill Operations Data</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 480px; line-height: 1.6; margin-bottom: 2rem;">
+                        We are logging in to the portal using your credentials to retrieve current Agreements, DOs, Gate Passes, and Quality stats.
+                    </p>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; background: var(--bg-body); padding: 0.6rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-light);">
+                        <i class="fa-solid fa-hourglass-half" style="color: var(--primary);"></i> This page will update automatically without refreshing. Please wait 1-2 minutes.
+                    </div>
+                </div>
+            </div>
+            <div id="dashboardNormalState" class="dashboard-grid">
                 <!-- Rice WIP Progress -->
                 <div class="card progress-card">
                     <div class="progress-header flex-resp">
@@ -268,32 +287,32 @@
                         </div>
                         <!-- FCI PENDING -->
                         <div
-                            style="flex: 1 1 200px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            style="flex: 1 1 200px; background: var(--bg-fci); border: 1px solid var(--border-fci); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
                             <div
-                                style="font-size: 0.85rem; font-weight: 600; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                style="font-size: 0.85rem; font-weight: 600; color: var(--text-fci-title); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                                 FCI Pending</div>
                             <div class="value-large"
-                                style="font-size: 2.2rem; color: #d97706; display: flex; align-items: baseline; gap: 0.4rem;">
+                                style="font-size: 2.2rem; color: var(--text-fci-val); display: flex; align-items: baseline; gap: 0.4rem;">
                                 <span id="valPendingFCI">0.00</span> <span
-                                    style="font-size: 1.1rem; color: #b45309; font-weight: 600;">Qtls</span>
+                                    style="font-size: 1.1rem; color: var(--text-fci-title); font-weight: 600;">Qtls</span>
                             </div>
-                            <div style="font-size: 1.05rem; font-weight: 700; color: #b45309; margin-top: 0.2rem;">
+                            <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-fci-title); margin-top: 0.2rem;">
                                 <span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsFCI">0</span>
                                     Lots</span>
                             </div>
                         </div>
                         <!-- NAN PENDING -->
                         <div
-                            style="flex: 1 1 200px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            style="flex: 1 1 200px; background: var(--bg-nan); border: 1px solid var(--border-nan); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
                             <div
-                                style="font-size: 0.85rem; font-weight: 600; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                style="font-size: 0.85rem; font-weight: 600; color: var(--text-nan-title); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                                 NAN Pending</div>
                             <div class="value-large"
-                                style="font-size: 2.2rem; color: #2563eb; display: flex; align-items: baseline; gap: 0.4rem;">
+                                style="font-size: 2.2rem; color: var(--text-nan-val); display: flex; align-items: baseline; gap: 0.4rem;">
                                 <span id="valPendingNAN">0.00</span> <span
-                                    style="font-size: 1.1rem; color: #1d4ed8; font-weight: 600;">Qtls</span>
+                                    style="font-size: 1.1rem; color: var(--text-nan-title); font-weight: 600;">Qtls</span>
                             </div>
-                            <div style="font-size: 1.05rem; font-weight: 700; color: #1d4ed8; margin-top: 0.2rem;">
+                            <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-nan-title); margin-top: 0.2rem;">
                                 <span><i class="fa-solid fa-boxes-stacked"></i> <span id="valPendingLotsNAN">0</span>
                                     Lots</span>
                             </div>
@@ -302,11 +321,11 @@
                 </div>
                 <!-- Paddy Split Card (Moved to Top) -->
                 <div class="card"
-                    style="grid-column: span 12; border-top: 4px solid var(--success); background: #ffffff;">
+                    style="grid-column: span 12; border-top: 4px solid var(--success); background: var(--bg-card);">
                     <div class="flex-resp"
                         style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <div>
-                            <div class="card-title" style="color: #065f46; margin-bottom: 0.5rem;"><i
+                            <div class="card-title" style="color: var(--text-main); margin-bottom: 0.5rem;"><i
                                     class="fa-solid fa-seedling text-success"></i> Paddy Account Status</div>
                             <div class="value-subtitle">Total Paddy Issued vs Lifted from Society</div>
                         </div>
@@ -316,37 +335,37 @@
                     </div>
                     <div class="flex-resp" style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: stretch;">
                         <div
-                            style="flex: 1 1 200px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            style="flex: 1 1 200px; background: var(--bg-do); border: 1px solid var(--border-do); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
                             <div
-                                style="font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                style="font-size: 0.85rem; font-weight: 600; color: var(--text-do-title); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                                 Total DO Qty</div>
                             <div class="value-large"
-                                style="font-size: 2.2rem; display: flex; align-items: baseline; gap: 0.4rem;">
+                                style="font-size: 2.2rem; color: var(--text-do-val); display: flex; align-items: baseline; gap: 0.4rem;">
                                 <span id="valTotalDO" class="skeleton">0.00</span> <span
-                                    style="font-size: 1.1rem; color: #64748b; font-weight: 600;">Qtls</span>
+                                    style="font-size: 1.1rem; color: var(--text-do-title); font-weight: 600;">Qtls</span>
                             </div>
                             <div style="display: none;"><span id="valDODisplay"></span></div>
                             <!-- Hidden for JS compat -->
                         </div>
                         <div
-                            style="flex: 1 1 200px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
+                            style="flex: 1 1 200px; background: var(--bg-lifted); border: 1px solid var(--border-lifted); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);">
                             <div
-                                style="font-size: 0.85rem; font-weight: 600; color: #be123c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                                style="font-size: 0.85rem; font-weight: 600; color: var(--text-lifted-title); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
                                 Lifted Paddy</div>
                             <div class="value-large"
-                                style="font-size: 2.2rem; color: #e11d48; display: flex; align-items: baseline; gap: 0.4rem;">
+                                style="font-size: 2.2rem; color: var(--text-lifted-val); display: flex; align-items: baseline; gap: 0.4rem;">
                                 <span id="valLiftedPaddy" class="skeleton">0.00</span> <span
-                                    style="font-size: 1.1rem; color: #be123c; font-weight: 600;">Qtls</span>
+                                    style="font-size: 1.1rem; color: var(--text-lifted-title); font-weight: 600;">Qtls</span>
                             </div>
                         </div>
                         <div
-                            style="flex: 1 1 250px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.15)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: var(--shadow-sm);">
+                            style="flex: 1 1 250px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2)); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: var(--shadow-sm);">
                             <div>
                                 <div
-                                    style="font-size: 0.9rem; font-weight: 700; color: #065f46; text-transform: uppercase; margin-bottom: 0.5rem;">
+                                    style="font-size: 0.9rem; font-weight: 700; color: var(--success); text-transform: uppercase; margin-bottom: 0.5rem;">
                                     = Balance to Lift</div>
                                 <div
-                                    style="font-weight: 800; color: #047857; font-size: 2rem; display: flex; align-items: baseline; gap: 0.3rem;">
+                                    style="font-weight: 800; color: var(--success); font-size: 2rem; display: flex; align-items: baseline; gap: 0.3rem;">
                                     <span id="valBalancePaddy" class="skeleton">0.00</span>
                                     <span style="font-size: 1rem; font-weight: 600; opacity: 0.9;">Qtls</span>
                                 </div>
@@ -360,7 +379,7 @@
                     </div>
                 </div>
                 <!-- Gate Pass Reconciliation -->
-                <div class="card" style="grid-column: span 12; background: #ffffff;">
+                <div class="card" style="grid-column: span 12; background: var(--bg-card);">
                     <div class="flex-resp"
                         style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <div>
@@ -391,12 +410,12 @@
                         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                             <thead>
                                 <tr style="background: var(--bg-body); color: var(--text-muted);">
-                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Date</th>
-                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Agreement No</th>
-                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
-                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid var(--border-light);">Date</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid var(--border-light);">Agreement No</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid var(--border-light);">Lot No</th>
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid var(--border-light; text-align: right;">
                                         Quantity</th>
-                                    <th style="padding: 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">
+                                    <th style="padding: 0.8rem; border-bottom: 2px solid var(--border-light); text-align: center;">
                                         Action Required</th>
                                 </tr>
                             </thead>
@@ -539,38 +558,22 @@ Authorized Signatory</textarea>
         <!-- Pending DO Details Modal -->
         <div id="doModal"
             style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-            <div
-                style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-                <div
-                    style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+            <div class="modal-card" style="max-width: 650px; max-height: 90vh;">
+                <div class="modal-header">
                     <div>
-                        <h3
-                            style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-truck-ramp-box" style="color: var(--success);"></i> Pending Delivery
-                            Orders (DO)</h3>
-                        <p style="margin: 0; color: #64748b; font-size: 0.85rem; margin-top: 0.3rem;">Remaining paddy
-                            balance summarized by date, center, and type.</p>
+                        <h3><i class="fa-solid fa-truck-ramp-box" style="color: var(--success);"></i> Pending Delivery Orders (DO)</h3>
+                        <p>Remaining paddy balance summarized by date, center, and type.</p>
                     </div>
-                    <button onclick="document.getElementById('doModal').style.display='none'"
-                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
-                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
-                        style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                    <button class="modal-close-btn" onclick="document.getElementById('doModal').style.display='none'">×</button>
                 </div>
-                <div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
-                    <div
-                        style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
-                            <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                <div class="modal-body">
+                    <div class="modal-table-container">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <th
-                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">
-                                        DO Date &amp; Center</th>
-                                    <th
-                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: center;">
-                                        Paddy Type</th>
-                                    <th
-                                        style="padding: 1rem; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; text-align: right;">
-                                        Pending Balance</th>
+                                    <th>DO Date &amp; Center</th>
+                                    <th style="text-align: center;">Paddy Type</th>
+                                    <th style="text-align: right;">Pending Balance</th>
                                 </tr>
                             </thead>
                             <tbody id="doModalBody">
@@ -579,8 +582,7 @@ Authorized Signatory</textarea>
                         </table>
                     </div>
                 </div>
-                <div
-                    style="padding: 1.2rem 2rem; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right;">
+                <div class="modal-footer">
                     <button onclick="document.getElementById('doModal').style.display='none'"
                         onmouseout="this.style.background='var(--success)'"
                         onmouseover="this.style.background='#04b083'"
@@ -591,25 +593,18 @@ Authorized Signatory</textarea>
         <!-- Rice Details Modal -->
         <div id="riceModal"
             style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-            <div
-                style="background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-                <div
-                    style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-                    <h3
-                        style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
+            <div class="modal-card" style="max-width: 650px; max-height: 90vh;">
+                <div class="modal-header">
+                    <h3 style="margin: 0; font-size: 1.35rem; display: flex; align-items: center; gap: 0.8rem;">
                         <div
                             style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
                             <i class="fa-solid fa-layer-group" style="color: #4318FF; font-size: 1.1rem;"></i>
                         </div>
                         Pending Rice Details
                     </h3>
-                    <button onclick="document.getElementById('riceModal').style.display='none'"
-                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
-                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
-                        style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                    <button class="modal-close-btn" onclick="document.getElementById('riceModal').style.display='none'">×</button>
                 </div>
-                <div id="riceModalBodyContainer"
-                    style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
+                <div id="riceModalBodyContainer" class="modal-body">
                     <div id="riceModalBody" style="display: flex; flex-direction: column; gap: 1rem;">
                         <!-- Injected by JS -->
                     </div>
@@ -619,34 +614,30 @@ Authorized Signatory</textarea>
         <!-- Gate Pass Modal -->
         <div id="gpModal"
             style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-            <div
-                style="background: white; border-radius: 12px; width: 100%; max-width: 1100px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-                <div
-                    style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-main);"><i
-                            class="fa-solid fa-list-check text-primary"></i> Full Lot Details (Agreement Wise)</h3>
-                    <button onclick="document.getElementById('gpModal').style.display='none'"
-                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">×</button>
+            <div class="modal-card" style="max-width: 1100px; max-height: 90vh;">
+                <div class="modal-header" style="padding: 1.5rem;">
+                    <h3 style="margin: 0; font-size: 1.25rem;"><i class="fa-solid fa-list-check text-primary"></i> Full Lot Details (Agreement Wise)</h3>
+                    <button class="modal-close-btn" onclick="document.getElementById('gpModal').style.display='none'">×</button>
                 </div>
                 <div id="agreementTabs"
-                    style="padding: 1rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 0.5rem; overflow-x: auto; background: #ffffff;">
+                    style="padding: 1rem; border-bottom: 1px solid var(--border-light); display: flex; gap: 0.5rem; overflow-x: auto; background: var(--bg-card);">
                     <!-- Buttons injected by JS -->
                 </div>
-                <div style="padding: 0; overflow-y: auto; flex: 1; background: #ffffff;">
+                <div style="padding: 0; overflow-y: auto; flex: 1; background: var(--bg-body);">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                         <thead>
                             <tr
                                 style="background: var(--bg-body); color: var(--text-muted); position: sticky; top: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">S.No</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">GP Date</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Approval Date</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">CMR Center</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Lot No</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: right;">
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">S.No</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">GP Date</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">Approval Date</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">CMR Center</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">Lot No</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light); text-align: right;">
                                     Quantity</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Commodity</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0;">Bag Year</th>
-                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid #e2e8f0; text-align: center;">
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">Commodity</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light);">Bag Year</th>
+                                <th style="padding: 1rem 0.8rem; border-bottom: 2px solid var(--border-light); text-align: center;">
                                     Status</th>
                             </tr>
                         </thead>
@@ -661,37 +652,24 @@ Authorized Signatory</textarea>
     <!-- All BGs Modal -->
     <div id="allBGsModal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 1rem;">
-        <div
-            style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-            <div
-                style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-                <h3
-                    style="margin: 0; font-size: 1.35rem; color: #0f172a; display: flex; align-items: center; gap: 0.8rem;">
-                    <div
-                        style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
+        <div class="modal-card" style="max-width: 800px; max-height: 90vh;">
+            <div class="modal-header">
+                <h3 style="margin: 0; font-size: 1.35rem; display: flex; align-items: center; gap: 0.8rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(67, 24, 255, 0.1); display: flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-vault" style="color: #4318FF; font-size: 1.1rem;"></i>
                     </div>
                     Active Bank Guarantees
                 </h3>
-                <button onclick="document.getElementById('allBGsModal').style.display='none'"
-                    onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
-                    onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
-                    style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                <button class="modal-close-btn" onclick="document.getElementById('allBGsModal').style.display='none'">×</button>
             </div>
-            <div style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
-                <div
-                    style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+            <div class="modal-body">
+                <div class="modal-table-container">
+                    <table>
                         <thead>
-                            <tr
-                                style="background: #f1f5f9; color: #475569; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">BG
-                                    No &amp; Bank</th>
-                                <th style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: 700;">
-                                    Expiry Date</th>
-                                <th
-                                    style="padding: 1.2rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">
-                                    Amount</th>
+                            <tr>
+                                <th>BG No &amp; Bank</th>
+                                <th>Expiry Date</th>
+                                <th style="text-align: right;">Amount</th>
                             </tr>
                         </thead>
                         <tbody id="allBGsModalBody">
@@ -877,27 +855,27 @@ Authorized Signatory</textarea>
     </div>
     <div id="supportModal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
-        <div
-            style="background: white; border-radius: 20px; width: 100%; max-width: 450px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.95); animation: popInSupport 0.3s forwards;">
+        <div class="modal-card"
+            style="width: 100%; max-width: 450px; overflow: hidden; transform: scale(0.95); animation: popInSupport 0.3s forwards;">
             <div
                 style="background: linear-gradient(135deg, var(--primary), #8b5cf6); padding: 2rem; color: white; position: relative;">
                 <button onclick="toggleSupportModal()" onmouseout="this.style.background='rgba(255,255,255,0.2)'"
                     onmouseover="this.style.background='rgba(255,255,255,0.3)'"
                     style="position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s;">×</button>
                 <h3
-                    style="margin: 0; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                    style="margin: 0; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: white !important;">
                     <i class="fa-solid fa-paper-plane"></i> Help &amp; Feedback</h3>
-                <p style="margin: 0; font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Got a suggestion or facing an
+                <p style="margin: 0; font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9; color: rgba(255,255,255,0.9) !important;">Got a suggestion or facing an
                     issue? Let us know!</p>
             </div>
-            <div style="padding: 2rem;">
+            <div style="padding: 2rem; background: var(--bg-card);">
                 <div style="margin-bottom: 1.2rem;">
                     <label
-                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Select
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Select
                         Topic <span style="color:red;">*</span></label>
-                    <select id="supportType" onblur="this.style.borderColor='#e2e8f0'"
+                    <select id="supportType" onblur="this.style.borderColor='var(--border-light)'"
                         onfocus="this.style.borderColor='var(--primary)'"
-                        style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; cursor: pointer; outline: none; transition: border-color 0.2s;">
+                        style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid var(--border-light); font-size: 0.95rem; font-family: inherit; color: var(--text-main); background: var(--bg-body); cursor: pointer; outline: none; transition: border-color 0.2s;">
                         <option value="Problem">Bug / Problem 🐛</option>
                         <option value="Suggestion">Feature Suggestion 💡</option>
                         <option value="Query">General Query ❓</option>
@@ -905,12 +883,12 @@ Authorized Signatory</textarea>
                 </div>
                 <div style="margin-bottom: 1.5rem;">
                     <label
-                        style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Your
+                        style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Your
                         Message <span style="color:red;">*</span></label>
-                    <textarea id="supportMsg" onblur="this.style.borderColor='#e2e8f0'"
+                    <textarea id="supportMsg" onblur="this.style.borderColor='var(--border-light)'"
                         onfocus="this.style.borderColor='var(--primary)'" placeholder="Type your message here..."
                         rows="4"
-                        style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; font-family: inherit; color: #1e293b; background: #f8fafc; resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
+                        style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid var(--border-light); font-size: 0.95rem; font-family: inherit; color: var(--text-main); background: var(--bg-body); resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
                 </div>
                 <button onclick="submitSupport()"
                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.3)';"
@@ -943,7 +921,7 @@ Authorized Signatory</textarea>
                         style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Miller
                         ID <span style="color: red;">*</span></label>
                     <input type="text" id="newMillId" required placeholder="e.g. MA441234"
-                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                        style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
@@ -951,7 +929,7 @@ Authorized Signatory</textarea>
                         style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">Portal
                         Password <span style="color: red;">*</span></label>
                     <input type="password" id="newMillPassword" required placeholder="Enter portal password"
-                        style="width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+                        style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
                 </div>
 
                 <button type="submit" class="btn"
@@ -1016,20 +994,15 @@ Authorized Signatory</textarea>
     <!-- Policy Modal -->
     <div id="policyModal"
         style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
-        <div
-            style="background: white; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-            <div
-                style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
-                <h3 id="policyModalTitle" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700;">
-                    Policy Document</h3>
-                <button onclick="document.getElementById('policyModal').style.display='none'"
-                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+        <div class="modal-card" style="max-width: 800px; max-height: 90vh;">
+            <div class="modal-header">
+                <h3 id="policyModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 700;">Policy Document</h3>
+                <button class="modal-close-btn" onclick="document.getElementById('policyModal').style.display='none'">&times;</button>
             </div>
-            <div id="policyModalContent"
-                style="padding: 2rem; overflow-y: auto; flex: 1; font-size: 0.9rem; line-height: 1.6; color: #334155;">
+            <div id="policyModalContent" class="modal-body" style="padding: 2rem; font-size: 0.9rem; line-height: 1.6;">
                 <!-- Content injected via JS -->
             </div>
-            <div style="padding: 1rem 2rem; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
+            <div class="modal-footer" style="padding: 1rem 2rem;">
                 <button onclick="document.getElementById('policyModal').style.display='none'"
                     style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">I
                     Understand</button>
