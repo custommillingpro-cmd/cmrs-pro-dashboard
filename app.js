@@ -879,9 +879,58 @@ function toggleSupportModal() {
                 const response = await fetch(`${API_BASE_URL}/dashboard/${millerId}`);
                 if (!response.ok) throw new Error('Data not found');
                 const result = await response.json();
+                const raw = result.data;
                 
+                // Flatten metrics into top-level for loadView compatibility
+                const m = raw.metrics || {};
+                const flat = {
+                    name: raw.name || raw.miller_name_full || millerId,
+                    miller_name_full: raw.miller_name_full || raw.name || millerId,
+                    targetRice: m.riceTarget || 0,
+                    depositedRice: m.riceDeposited || 0,
+                    riceBalance: m.riceBalance || 0,
+                    totalAllottedPaddy: m.totalAllottedPaddy || 0,
+                    balancePaddy: m.balancePaddy || 0,
+                    paddyAmt: m.paddyAmt || 0,
+                    bgAmount: m.bgAmount || 0,
+                    freeBg: m.freeBg || 0,
+                    pendingDOs: raw.pendingDOs || [],
+                    gatePassStatus: raw.gatePassStatus || [],
+                    nearestBgs: raw.nearestBgs || []
+                };
+
+                // Transform riceQualities from [{qualities: {type: qty}}]
+                // into [{agreement_type, agreement_no, total_pending, qualities}]
+                const rawQ = raw.riceQualities || [];
+                let qualGroups = {};
+                rawQ.forEach(rq => {
+                    if (rq.qualities) {
+                        Object.entries(rq.qualities).forEach(([qName, qty]) => {
+                            // Group by pool category (Central Pool, State Pool, etc.)
+                            let agrType = 'Agreement';
+                            let agrNo = millerId;
+                            if (qName.includes('Central Pool')) agrType = 'Central Pool';
+                            else if (qName.includes('State Pool')) agrType = 'State Pool';
+                            else if (qName.includes('FCI')) agrType = 'FCI';
+                            
+                            const key = agrType;
+                            if (!qualGroups[key]) {
+                                qualGroups[key] = {
+                                    agreement_type: agrType,
+                                    agreement_no: millerId,
+                                    total_pending: 0,
+                                    qualities: {}
+                                };
+                            }
+                            qualGroups[key].qualities[qName] = qty;
+                            qualGroups[key].total_pending += qty;
+                        });
+                    }
+                });
+                flat.riceQualities = Object.values(qualGroups);
+
                 if (!window.dashboardData) window.dashboardData = {};
-                window.dashboardData[millerId] = result.data;
+                window.dashboardData[millerId] = flat;
                 return true;
             } catch (error) {
                 console.error("Error fetching data:", error);
