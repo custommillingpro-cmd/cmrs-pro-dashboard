@@ -126,7 +126,6 @@ function toggleSupportModal() {
         const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
         const formatNumber = (val) => new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(val);
 
-        const data = window.dashboardData;
 
         const animateValue = (id, start, end, duration, formatter) => {
             const obj = document.getElementById(id);
@@ -230,7 +229,7 @@ function toggleSupportModal() {
                 if (lbSection) lbSection.style.display = 'none';
             }
             
-            const mData = data[id];
+            const mData = window.dashboardData[id];
             
             // Remove skeletons
             document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
