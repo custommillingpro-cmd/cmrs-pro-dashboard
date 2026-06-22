@@ -109,13 +109,49 @@ def get_dashboard_data(miller_id: str):
     cursor.execute("SELECT * FROM bank_guarantees WHERE miller_id = %s", (miller_id,))
     bgs = cursor.fetchall()
     
+    # Fetch last sync time
+    cursor.execute("SELECT last_sync_time FROM miller_credentials WHERE miller_id = %s", (miller_id,))
+    cred = cursor.fetchone()
+    last_sync = None
+    if cred and cred.get('last_sync_time'):
+        last_sync = str(cred['last_sync_time'])
+    
     conn.close()
+    
+    # Group rice qualities by agreement number
+    rq_dict = {}
+    for rq in rice_qualities:
+        ano = rq.get('agreement_no') or ''
+        atype = rq.get('agreement_type') or ''
+        qtype = rq.get('quality_type') or ''
+        qty = float(rq.get('quantity') or 0.0)
+        
+        if not ano:
+            ano = 'Other'
+            atype = 'Other'
+            
+        if ano not in rq_dict:
+            rq_dict[ano] = {
+                "agreement_no": ano,
+                "agreement_type": atype,
+                "total_pending": 0.0,
+                "qualities": {}
+            }
+            
+        if qtype in rq_dict[ano]["qualities"]:
+            rq_dict[ano]["qualities"][qtype] += qty
+        else:
+            rq_dict[ano]["qualities"][qtype] = qty
+        rq_dict[ano]["total_pending"] += qty
+        
+    formatted_rq = list(rq_dict.values())
     
     # Transform to match original data.js format
     formatted_data = {
         "miller_id": miller['id'],
         "name": miller['name'],
         "miller_name_full": miller['name'],
+        "last_sync_time": last_sync,
         "metrics": {
             "riceTarget": miller['target_rice'],
             "riceDeposited": miller['deposited_rice'],
@@ -127,10 +163,7 @@ def get_dashboard_data(miller_id: str):
             "freeBg": miller['free_bg']
         },
         
-        # We need to format rice_qualities back to list of dicts with 'qualities'
-        # The original was: [{'agreement': '...', 'qualities': {'ARWA': 100}}]
-        # Since we just saved quality_type and quantity, we can simplify or group them
-        "riceQualities": [{"qualities": {rq['quality_type']: rq['quantity']}} for rq in rice_qualities],
+        "riceQualities": formatted_rq,
         
         "gatePassStatus": [
             {
