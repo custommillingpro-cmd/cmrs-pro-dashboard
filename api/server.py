@@ -18,7 +18,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from mysql.connector import pooling
+
+# Initialize TiDB Connection Pool
+try:
+    db_pool = pooling.MySQLConnectionPool(
+        pool_name="cmrs_pool",
+        pool_size=5,
+        pool_reset_session=True,
+        host=os.getenv("DB_HOST", "gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com"),
+        port=int(os.getenv("DB_PORT", 4000)),
+        user=os.getenv("DB_USER", "47DktuAxv5uhMxU.root"),
+        password=os.getenv("DB_PASSWORD", "IgkKsq49O0py7Cxs"),
+        database=os.getenv("DB_NAME", "cmrs_pro"),
+        ssl_verify_cert=False,
+        ssl_verify_identity=False
+    )
+except Exception as pe:
+    print(f"Error initializing database pool: {pe}")
+    db_pool = None
+
 def get_db_connection():
+    if db_pool:
+        try:
+            return db_pool.get_connection()
+        except Exception as e:
+            print(f"Failed to get pooled connection, falling back to direct connection: {e}")
+            
     try:
         return mysql.connector.connect(
             host=os.getenv("DB_HOST", "gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com"),
@@ -264,7 +290,12 @@ def add_mill(req: AddMillRequest):
         conn.close()
         
     # Trigger the background scraper to fetch data for the first time
-    trigger_github_action(miller_id, req.password, action_type="add-mill")
+    triggered = trigger_github_action(miller_id, req.password, action_type="add-mill")
+    if not triggered:
+        raise HTTPException(
+            status_code=500,
+            detail="Credentials saved, but failed to trigger background scraper. Check GITHUB_TOKEN setup on server."
+        )
     
     return {"status": "success", "message": "Credentials saved. Data extraction started in background."}
 
@@ -285,15 +316,17 @@ def sync_live(req: SyncRequest):
         conn.close()
         raise HTTPException(status_code=404, detail="Credentials not found. Please re-add mill.")
         
-    # Check 1-hour cooldown
+    # Check 5-minute cooldown
     if cred['last_sync_time']:
         time_diff = datetime.now() - cred['last_sync_time']
-        if time_diff < timedelta(hours=1):
+        if time_diff < timedelta(minutes=5):
             conn.close()
-            remaining_mins = int(60 - time_diff.total_seconds() / 60)
+            remaining_secs = int(300 - time_diff.total_seconds())
+            remaining_mins = remaining_secs // 60
+            remaining_secs = remaining_secs % 60
             raise HTTPException(
                 status_code=429, 
-                detail=f"Sync is frozen to prevent server overload. Please try again in {remaining_mins} minutes."
+                detail=f"Sync is frozen to prevent server overload. Please try again in {remaining_mins}m {remaining_secs}s."
             )
             
     # Update last_sync_time
@@ -306,6 +339,11 @@ def sync_live(req: SyncRequest):
         conn.close()
         
     # Trigger background worker
-    trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
+    triggered = trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
+    if not triggered:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to trigger live sync. Check GITHUB_TOKEN setup on server."
+        )
     
-    return {"status": "success", "message": "Live sync started in background. Refresh dashboard in 1-2 minutes."}
+    return {"status": "success", "message": "Live sync started in background. The dashboard will update automatically in 1-2 minutes."}

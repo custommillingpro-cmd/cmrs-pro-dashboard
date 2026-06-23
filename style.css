@@ -11,6 +11,13 @@
             --danger: #ef4444; /* Red */
             --warning: #f59e0b; /* Amber */
             
+            /* Custom theme variables - Light Mode */
+            --bg-tab-active: #ffffff;
+            --text-tab-active: var(--primary);
+            --bg-total-pending: linear-gradient(135deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.05));
+            --border-total-pending: rgba(15, 23, 42, 0.1);
+            --bg-free-kpi: linear-gradient(180deg, #ffffff, #fff5f5);
+
             /* Custom card variables - Light Mode */
             --bg-fci: #fffbeb;
             --border-fci: #fde68a;
@@ -109,8 +116,8 @@
         }
 
         .tab-btn.active {
-            color: var(--primary);
-            background-color: #ffffff;
+            color: var(--text-tab-active);
+            background-color: var(--bg-tab-active);
             box-shadow: var(--shadow-sm);
         }
 
@@ -445,6 +452,13 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-light: #334155;
+
+            /* Custom theme variables - Dark Mode */
+            --bg-tab-active: var(--primary);
+            --text-tab-active: #ffffff;
+            --bg-total-pending: var(--bg-card);
+            --border-total-pending: var(--border-light);
+            --bg-free-kpi: linear-gradient(180deg, #1e293b, rgba(239, 68, 68, 0.15));
             
             /* Custom card variables - Dark Mode */
             --bg-fci: rgba(217, 119, 6, 0.15);

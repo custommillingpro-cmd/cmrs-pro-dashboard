@@ -1046,11 +1046,24 @@ function toggleSupportModal() {
                     if (activeTab && activeTab.getAttribute('data-id') === millerId) {
                         loadView(millerId);
                     }
+                    
+                    // Reset sync button if it was disabled
+                    const btn = document.getElementById('syncButton');
+                    const btnText = document.getElementById('syncBtnText');
+                    const icon = btn ? btn.querySelector('i') : null;
+                    if (btn && btnText && icon) {
+                        btn.disabled = false;
+                        btnText.innerText = "Sync Live Data";
+                        icon.className = "fa-solid fa-arrows-rotate";
+                    }
                 }
             }, 10000);
         }
 
         async function initAuth() {
+            // Pre-warm the backend Render API
+            fetch(`${API_BASE_URL}/health`).catch(err => console.log("Pre-warming failed:", err));
+
             // Force clear any old data.js cache to prevent ghost millers
             window.dashboardData = {};
             
@@ -1060,8 +1073,8 @@ function toggleSupportModal() {
                 sessionStorage.setItem('payment_skipped', 'true');
                 checkLoginStatus();
                 
-                // Fetch data for all users
-                for (const u of users) {
+                // Fetch data for all users in parallel
+                const fetchPromises = users.map(async (u) => {
                     const success = await fetchDashboardData(u);
                     if (!success) {
                         // Keep a loading placeholder so the tab is shown!
@@ -1091,7 +1104,8 @@ function toggleSupportModal() {
                         // Start polling in background
                         startBackgroundPollingForMill(u);
                     }
-                }
+                });
+                await Promise.all(fetchPromises);
                 
                 initializeDashboardView();
             } else {
@@ -1268,14 +1282,23 @@ function toggleSupportModal() {
                 
                 if (response.ok) {
                     alert(result.message);
-                    // Freeze button
-                    btnText.innerText = "Cooldown Active";
-                    btn.style.background = "#e2e8f0";
-                    btn.style.color = "#94a3b8";
-                    btn.style.cursor = "not-allowed";
+                    
+                    // Mark as loading in dashboardData
+                    if (window.dashboardData && window.dashboardData[activeMillerId]) {
+                        window.dashboardData[activeMillerId].loading = true;
+                    }
+                    
+                    // Re-render dashboard view to show loading spinner immediately
+                    initializeDashboardView(activeMillerId);
+                    
+                    // Start background polling to auto-update
+                    startBackgroundPollingForMill(activeMillerId);
+                    
+                    // Reset sync button text but keep it disabled during sync
+                    btnText.innerText = "Sync In Progress";
                     icon.classList.remove('fa-spin');
                     icon.classList.remove('fa-arrows-rotate');
-                    icon.classList.add('fa-lock');
+                    icon.classList.add('fa-spinner', 'fa-spin');
                 } else {
                     alert("Error: " + result.detail);
                     btn.disabled = false;
