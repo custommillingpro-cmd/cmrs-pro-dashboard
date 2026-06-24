@@ -840,7 +840,7 @@ function toggleSupportModal() {
             keys.forEach(k => {
                 if (k !== 'combined') {
                     // Make sure name exists, use ID as fallback
-                    const millerName = dashboardData[k].loading ? `Loading Mill (${k})` : (dashboardData[k].miller_name_full || k);
+                    const millerName = dashboardData[k].miller_name_full || dashboardData[k].name || k;
                     tabsContainer.innerHTML += `<button class="tab-btn" data-id="${k}">${millerName}</button>`;
                 }
             });
@@ -855,7 +855,7 @@ function toggleSupportModal() {
             });
 
             // Decide which tab to activate
-            if (!activeId || !keys.includes(activeId)) {
+            if (!activeId || (!keys.includes(activeId) && activeId !== 'leaderboard')) {
                 if (keys.length > 1) {
                     activeId = 'combined';
                 } else {
@@ -964,12 +964,17 @@ function toggleSupportModal() {
         
         const API_BASE_URL = 'https://cmrs-pro-dashboard.onrender.com/api';
 
-        async function fetchDashboardData(millerId) {
+        async function fetchDashboardData(millerId, oldSyncTime = null) {
             try {
                 const response = await fetch(`${API_BASE_URL}/dashboard/${millerId}`);
                 if (!response.ok) throw new Error('Data not found');
                 const result = await response.json();
                 const raw = result.data;
+                
+                // If we are polling for an update, check if the time has actually changed
+                if (oldSyncTime && raw.last_sync_time === oldSyncTime) {
+                    return false; 
+                }
                 
                 // Flatten metrics into top-level for loadView compatibility
                 const m = raw.metrics || {};
@@ -994,7 +999,7 @@ function toggleSupportModal() {
 
                 if (!window.dashboardData) window.dashboardData = {};
                 window.dashboardData[millerId] = flat;
-                return true;
+                return raw.last_sync_time || true;
             } catch (error) {
                 console.error("Error fetching data:", error);
                 return false;
@@ -1042,9 +1047,11 @@ function toggleSupportModal() {
             }
             if (!window.pollingIntervals) window.pollingIntervals = {};
             
+            const oldSyncTime = window.dashboardData && window.dashboardData[millerId] ? window.dashboardData[millerId].last_sync_time : null;
+            
             window.pollingIntervals[millerId] = setInterval(async () => {
-                const success = await fetchDashboardData(millerId);
-                if (success) {
+                const newSyncTime = await fetchDashboardData(millerId, oldSyncTime);
+                if (newSyncTime) {
                     clearInterval(window.pollingIntervals[millerId]);
                     delete window.pollingIntervals[millerId];
                     
