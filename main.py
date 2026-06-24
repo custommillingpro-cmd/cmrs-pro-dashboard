@@ -14,6 +14,10 @@ import os
 import cv2
 import numpy as np
 import mysql.connector
+import base64
+import json
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def extract_gatepasses(driver, cmr_lots, agr_map):
     driver.get("https://cgpaddyonline.co.in/millmodify25/RptGatepasslist.aspx")
@@ -520,8 +524,9 @@ def scrape_data():
             ("MA441707", "Raju#14436")
         ]
     
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    data_dir = os.path.join(BASE_DIR, "data")
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
     
     data_found = False
     financial_data = []
@@ -799,21 +804,19 @@ def scrape_data():
                         
                 # Create Folder
                 safe_name = re.sub(r'[\\\\/*?:"<>|]', "", miller_name_full)
-                folder_name = f"{safe_name} ({user_id})"
-                out_dir = os.path.join("data", folder_name)
-                if not os.path.exists(out_dir):
-                    os.makedirs(out_dir)
+                # Save localized data to Excel
+                miller_dir = os.path.join(data_dir, f"{safe_name} ({user_id})")
+                if not os.path.exists(miller_dir):
+                    os.makedirs(miller_dir)
                     
-                output_file = os.path.join(out_dir, f"{user_id}_Report.xlsx")
+                excel_path = os.path.join(miller_dir, f"{user_id}_Report.xlsx")
                 try:
-                    wb.save(output_file)
-                    print(f"Saved {user_id} Excel to {output_file}")
+                    wb.save(excel_path)
+                    print(f"Saved {user_id} Excel to {excel_path}")
                 except PermissionError:
-                    print(f"Warning: Could not save Excel {output_file} because the file is open in another program. Dashboard data will still be updated.")
+                    print(f"Warning: Could not save Excel {excel_path} because the file is open in another program. Dashboard data will still be updated.")
                 
                 # Create isolated Dashboard data for this miller
-                import json
-                import shutil
                 miller_js_data = {
                     user_id: {
                         "name": f"{miller_name_full} ({user_id})",
@@ -831,23 +834,36 @@ def scrape_data():
                         "bags": { "new": 0, "old": 0, "pds": 0 }
                     }
                 }
+                
                 # Inject the dashboard app so the folder has a STANDALONE SINGLE HTML FILE!
-                if os.path.exists("index.html"):
-                    with open("index.html", "r", encoding="utf-8") as f_app:
+                index_path = os.path.join(BASE_DIR, "index.html")
+                style_path = os.path.join(BASE_DIR, "style.css")
+                app_path = os.path.join(BASE_DIR, "app.js")
+                leaderboard_path = os.path.join(BASE_DIR, "raipur_leaderboard.json")
+                logo_path = os.path.join(BASE_DIR, "logo.png")
+                
+                if os.path.exists(index_path):
+                    with open(index_path, "r", encoding="utf-8") as f_app:
                         app_content = f_app.read()
-                    with open("style.css", "r", encoding="utf-8") as f_css:
-                        css_str = f_css.read()
-                    with open("app.js", "r", encoding="utf-8") as f_js:
+                    if os.path.exists(style_path):
+                        with open(style_path, "r", encoding="utf-8") as f_css:
+                            css_str = f_css.read()
+                        app_content = app_content.replace('<link rel="stylesheet" href="style.css">', f"<style>\n{css_str}\n</style>")
+                        
+                    with open(app_path, "r", encoding="utf-8") as f_js:
                         js_app_str = f_js.read()
                         
-                    app_content = app_content.replace('<link rel="stylesheet" href="style.css">', f"<style>\n{css_str}\n</style>")
-                    
                     # Load leaderboard
                     leaderboard_str = ""
-                    if os.path.exists("raipur_leaderboard.json"):
-                        with open("raipur_leaderboard.json", "r", encoding="utf-8") as fl:
+                    if os.path.exists(leaderboard_path):
+                        with open(leaderboard_path, "r", encoding="utf-8") as fl:
                             leaderboard_str = "\nwindow.leaderboardData = " + fl.read() + ";"
                     
+                    if os.path.exists(logo_path):
+                        with open(logo_path, "rb") as img_f:
+                            b64_logo = base64.b64encode(img_f.read()).decode('utf-8')
+                            app_content = app_content.replace('src="logo.png"', f'src="data:image/png;base64,{b64_logo}"')
+                            
                     js_string = "window.dashboardData = " + json.dumps(miller_js_data) + ";"
                     js_combined = js_string + leaderboard_str + "\n" + js_app_str
                     app_content = app_content.replace('<script src="app.js"></script>', f"<script>\n{js_combined}\n</script>")
@@ -1005,29 +1021,41 @@ def scrape_data():
                     leaderboard_str = "\nwindow.leaderboardData = " + fl.read() + ";"
 
             # Also create a self-contained Combined Dashboard!
-            if os.path.exists("index.html"):
-                with open("index.html", "r", encoding="utf-8") as f_app:
+            index_path = os.path.join(BASE_DIR, "index.html")
+            style_path = os.path.join(BASE_DIR, "style.css")
+            app_path = os.path.join(BASE_DIR, "app.js")
+            leaderboard_path = os.path.join(BASE_DIR, "raipur_leaderboard.json")
+            logo_path = os.path.join(BASE_DIR, "logo.png")
+            combined_path = os.path.join(BASE_DIR, "Combined_Dashboard.html")
+            
+            if os.path.exists(index_path):
+                with open(index_path, "r", encoding="utf-8") as f_app:
                     app_content = f_app.read()
-                with open("style.css", "r", encoding="utf-8") as f_css:
-                    css_str = f_css.read()
-                with open("app.js", "r", encoding="utf-8") as f_js:
+                
+                if os.path.exists(style_path):
+                    with open(style_path, "r", encoding="utf-8") as f_css:
+                        css_str = f_css.read()
+                    app_content = app_content.replace('<link href="style.css" rel="stylesheet"/>', f"<style>\n{css_str}\n</style>")
+                    app_content = app_content.replace('<link rel="stylesheet" href="style.css">', f"<style>\n{css_str}\n</style>")
+                    
+                with open(app_path, "r", encoding="utf-8") as f_js:
                     js_app_str = f_js.read()
                 
-                import base64
-                
-                app_content = app_content.replace('<link href="style.css" rel="stylesheet"/>', f"<style>\n{css_str}\n</style>")
-                app_content = app_content.replace('<link rel="stylesheet" href="style.css">', f"<style>\n{css_str}\n</style>")
-                
-                if os.path.exists("logo.png"):
-                    with open("logo.png", "rb") as img_f:
+                if os.path.exists(logo_path):
+                    with open(logo_path, "rb") as img_f:
                         b64_logo = base64.b64encode(img_f.read()).decode('utf-8')
                         app_content = app_content.replace('src="logo.png"', f'src="data:image/png;base64,{b64_logo}"')
+                
+                leaderboard_str = ""
+                if os.path.exists(leaderboard_path):
+                    with open(leaderboard_path, "r", encoding="utf-8") as fl:
+                        leaderboard_str = "\nwindow.leaderboardData = " + fl.read() + ";"
                 
                 js_combined = js_str + leaderboard_str + "\n" + js_app_str
                 app_content = app_content.replace('<script src="app.js"></script>', f"<script>\n{js_combined}\n</script>")
                 app_content = app_content.replace('<script src="data.js"></script>', "")
                 
-                with open("Combined_Dashboard.html", "w", encoding="utf-8") as f_out:
+                with open(combined_path, "w", encoding="utf-8") as f_out:
                     f_out.write(app_content)
                 print("Successfully generated Combined_Dashboard.html for sharing!")
                 
