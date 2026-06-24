@@ -162,13 +162,20 @@ def login(driver, user_id, password):
             except TimeoutException:
                 pass
             
-            # Handle active session warning dynamically
             try:
                 btn_ok = WebDriverWait(driver, 3).until(
                     EC.element_to_be_clickable((By.ID, "btnOk"))
                 )
                 print("Active session found. Clicking OK to deactivate other user...")
                 driver.execute_script("arguments[0].click();", btn_ok)
+                
+                try:
+                    WebDriverWait(driver, 3).until(EC.alert_is_present())
+                    alert = driver.switch_to.alert
+                    alert.accept()
+                except TimeoutException:
+                    pass
+                    
                 # Wait for the next page to load
                 WebDriverWait(driver, 10).until(
                     EC.url_changes(driver.current_url)
@@ -520,7 +527,12 @@ def scrape_data():
     financial_data = []
 
     try:
-        for user_id, password in accounts:
+        batch_size = 10
+        for idx, (user_id, password) in enumerate(accounts):
+            if idx > 0 and idx % batch_size == 0:
+                print(f"Batch limit reached ({batch_size} mills processed). Taking a 3-minute break to avoid server overload...")
+                time.sleep(180)
+                
             miller_rice_target = 0.0
             miller_rice_deposited = 0.0
             miller_rice_balance = 0.0
@@ -974,6 +986,9 @@ def scrape_data():
                     for bg in fdata.get('bgs', []):
                         cursor.execute("INSERT INTO bank_guarantees (miller_id, bank_name, bg_no, amount, valid_date, days_left) VALUES (%s, %s, %s, %s, %s, %s)",
                                        (mid, bg.get('bank'), bg.get('id'), bg.get('amount'), bg.get('date'), bg.get('daysLeft')))
+                                       
+                    # Update sync time in credentials table
+                    cursor.execute("UPDATE miller_credentials SET last_sync_time = NOW() WHERE miller_id = %s", (mid,))
                                        
                 db_conn.commit()
                 cursor.close()

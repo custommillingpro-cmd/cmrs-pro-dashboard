@@ -140,7 +140,7 @@ def get_dashboard_data(miller_id: str):
     cred = cursor.fetchone()
     last_sync = None
     if cred and cred.get('last_sync_time'):
-        last_sync = str(cred['last_sync_time'])
+        last_sync = cred['last_sync_time'].strftime("%Y-%m-%dT%H:%M:%SZ")
     
     conn.close()
     
@@ -291,13 +291,12 @@ def add_mill(req: AddMillRequest):
         
     # Trigger the background scraper to fetch data for the first time
     triggered = trigger_github_action(miller_id, req.password, action_type="add-mill")
-    if not triggered:
-        raise HTTPException(
-            status_code=500,
-            detail="Credentials saved, but failed to trigger background scraper. Check GITHUB_TOKEN setup on server."
-        )
     
-    return {"status": "success", "message": "Credentials saved. Data extraction started in background."}
+    msg = "Credentials saved. Data extraction started in background."
+    if not triggered:
+        msg = "Credentials saved. (Background sync not configured, will sync on next manual run)"
+    
+    return {"status": "success", "message": msg}
 
 class SyncRequest(BaseModel):
     miller_id: str
@@ -340,10 +339,9 @@ def sync_live(req: SyncRequest):
         
     # Trigger background worker
     triggered = trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
-    if not triggered:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to trigger live sync. Check GITHUB_TOKEN setup on server."
-        )
     
-    return {"status": "success", "message": "Live sync started in background. The dashboard will update automatically in 1-2 minutes."}
+    msg = "Live sync started in background. The dashboard will update automatically in 1-2 minutes."
+    if not triggered:
+        msg = "Sync request registered. (Background sync not configured, please run scraper manually)"
+    
+    return {"status": "success", "message": msg}

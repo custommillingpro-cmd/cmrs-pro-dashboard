@@ -277,7 +277,12 @@ function toggleSupportModal() {
             const syncTimeEl = document.getElementById('lastSyncTime');
             if (syncTimeEl) {
                 if (mData.last_sync_time) {
-                    syncTimeEl.innerHTML = `<i class="fa-solid fa-clock"></i> Last Updated: ${mData.last_sync_time}`;
+                    const dateObj = new Date(mData.last_sync_time);
+                    const formattedTime = dateObj.toLocaleString('en-IN', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit', hour12: true
+                    });
+                    syncTimeEl.innerHTML = `<i class="fa-solid fa-clock"></i> Last Updated: ${formattedTime}`;
                 } else if (id === 'combined') {
                     syncTimeEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> Combined data from all mills`;
                 } else {
