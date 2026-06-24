@@ -962,7 +962,7 @@ function toggleSupportModal() {
         
         // --- AUTHENTICATION & SECURITY LOGIC ---
         
-        const API_BASE_URL = 'https://cmrs-pro-dashboard.onrender.com/api';
+        const API_BASE_URL = 'https://api.cmrspro.com/api';
 
         async function fetchDashboardData(millerId, oldSyncTime = null) {
             try {
