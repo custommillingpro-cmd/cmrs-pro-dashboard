@@ -320,14 +320,8 @@ def sync_live(req: SyncRequest):
         raise HTTPException(status_code=404, detail="Credentials not found. Please re-add mill.")
         
     # Freeze check removed as per user request
-    # Update last_sync_time
-    try:
-        cursor.execute("UPDATE miller_credentials SET last_sync_time = NOW() WHERE miller_id = %s", (miller_id,))
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-    finally:
-        conn.close()
+    # Removed preemptive last_sync_time update so frontend polling waits for actual scraper completion.
+    conn.close()
         
     # Trigger background worker
     triggered = trigger_github_action(miller_id, cred['portal_password'], action_type="sync")
