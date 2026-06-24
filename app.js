@@ -1091,8 +1091,8 @@ function toggleSupportModal() {
                         window.dashboardData[u] = {
                             loading: true,
                             miller_id: u,
-                            name: "Loading Mill (" + u + ")",
-                            miller_name_full: "Loading Mill (" + u + ")",
+                            name: "Data Extraction in Progress... (" + u + ")",
+                            miller_name_full: "Data Extraction in Progress... (" + u + ")",
                             last_sync_time: null,
                             metrics: {
                                 riceTarget: 0,
@@ -1223,8 +1223,8 @@ function toggleSupportModal() {
                     window.dashboardData[millerId] = {
                         loading: true,
                         miller_id: millerId,
-                        name: "M/S. Loading Miller (" + millerId + ")",
-                        miller_name_full: "M/S. Loading Miller (" + millerId + ")",
+                        name: "Data Extraction in Progress... (" + millerId + ")",
+                        miller_name_full: "Data Extraction in Progress... (" + millerId + ")",
                         last_sync_time: null,
                         metrics: {
                             riceTarget: 0,

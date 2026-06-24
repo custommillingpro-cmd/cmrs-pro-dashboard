@@ -492,7 +492,9 @@ def cleanup_do_table(ws, start_row, end_row, agr_no=""):
 
 def scrape_data():
     options = webdriver.ChromeOptions()
-    # options.add_argument('--headless')
+    options.add_argument('--headless=new')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
     
     # Fetch accounts from MySQL dynamically

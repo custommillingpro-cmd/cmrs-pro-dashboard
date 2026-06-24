@@ -18,6 +18,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"status": "ok", "message": "CMRS Pro API Backend is running"}
+
 from mysql.connector import pooling
 
 # Initialize TiDB Connection Pool
@@ -315,19 +319,7 @@ def sync_live(req: SyncRequest):
         conn.close()
         raise HTTPException(status_code=404, detail="Credentials not found. Please re-add mill.")
         
-    # Check 5-minute cooldown
-    if cred['last_sync_time']:
-        time_diff = datetime.now() - cred['last_sync_time']
-        if time_diff < timedelta(minutes=5):
-            conn.close()
-            remaining_secs = int(300 - time_diff.total_seconds())
-            remaining_mins = remaining_secs // 60
-            remaining_secs = remaining_secs % 60
-            raise HTTPException(
-                status_code=429, 
-                detail=f"Sync is frozen to prevent server overload. Please try again in {remaining_mins}m {remaining_secs}s."
-            )
-            
+    # Freeze check removed as per user request
     # Update last_sync_time
     try:
         cursor.execute("UPDATE miller_credentials SET last_sync_time = NOW() WHERE miller_id = %s", (miller_id,))
