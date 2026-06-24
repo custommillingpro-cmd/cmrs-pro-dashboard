@@ -1017,8 +1017,13 @@ function toggleSupportModal() {
 
             if (users.length > 0) {
                 if (loginOverlay) loginOverlay.style.display = 'none';
-                if (paymentOverlay) paymentOverlay.style.display = 'none';
-                return true;
+                if (!sessionStorage.getItem('payment_skipped')) {
+                    if (paymentOverlay) paymentOverlay.style.display = 'flex';
+                    return false;
+                } else {
+                    if (paymentOverlay) paymentOverlay.style.display = 'none';
+                    return true;
+                }
             } else {
                 if (loginOverlay) loginOverlay.style.display = 'flex';
                 if (paymentOverlay) paymentOverlay.style.display = 'none';
@@ -1069,9 +1074,8 @@ function toggleSupportModal() {
             
             const users = getCmrsUsers();
             if (users.length > 0) {
-                // Ensure overlays are hidden
-                sessionStorage.setItem('payment_skipped', 'true');
-                checkLoginStatus();
+                const isFullyAuth = checkLoginStatus();
+                if (!isFullyAuth) return; // Stop fetching data if payment is not cleared
                 
                 // Fetch data for all users in parallel
                 const fetchPromises = users.map(async (u) => {
